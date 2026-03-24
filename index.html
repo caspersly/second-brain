@@ -90,6 +90,9 @@
   .rule strong{color:var(--accent)}.rule .why{display:block;font-size:0.75rem;color:var(--text-dim);margin-top:4px;font-style:italic}
   .memo-area textarea{width:100%;min-height:90px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:10px 12px;border-radius:var(--radius-sm);outline:none;resize:vertical;line-height:1.5}
   .memo-area textarea::placeholder{color:var(--text-muted)}
+  .memo-display{padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-size:0.88rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:40px;color:var(--text)}
+  .memo-display.empty{color:var(--text-muted);font-style:italic}
+  .memo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
   .memo-save{margin-top:8px;background:var(--green);color:white;border:none;padding:8px 14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer}
   .checklist{display:grid;gap:6px}
   .check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);cursor:pointer;font-size:0.85rem}
@@ -131,7 +134,7 @@ async function cL(){const c=gC();if(!c.binId||!c.apiKey){ss='offline';return nul
 async function cS(){const c=gC();if(!c.binId||!c.apiKey){ss='offline';return}ss='syncing';render();try{const r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':c.apiKey},body:JSON.stringify(gAD())});if(!r.ok)throw new Error(r.status);ss='ok';lst=new Date()}catch(e){ss='error'}render()}
 function schS(){sL('captures',captures);sL('habits',habits);sL('memos',memos);sL('morning',morningChecks);sL('phone',phoneMinutes);sL('weekEvents',weekEvents);sL('appointments',appointments);sL('habitNames',hL);if(st)clearTimeout(st);st=setTimeout(()=>cS(),1500)}
 
-let captures=lL('captures',[]),habits=lL('habits',{}),memos=lL('memos',{partner:'',work:''}),morningChecks=lL('morning',{}),phoneMinutes=lL('phone',{today:0,date:''}),appointments=lL('appointments',[]),currentTab='capture',editingDay=null;
+let captures=lL('captures',[]),habits=lL('habits',{}),memos=lL('memos',{partner:'',work:''}),morningChecks=lL('morning',{}),phoneMinutes=lL('phone',{today:0,date:''}),appointments=lL('appointments',[]),currentTab='capture',editingDay=null,editingMemo=null;
 const today=new Date(),dN=['So','Mo','Di','Mi','Do','Fr','Sa'],dNF=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],tS=today.toISOString().split('T')[0],cD=today.getDay();
 const lm=lL('morning_date','');if(lm!==tS){morningChecks={};sL('morning',morningChecks);sL('morning_date',tS)}
 if(phoneMinutes.date!==tS){phoneMinutes={today:0,date:tS};sL('phone',phoneMinutes)}
@@ -198,8 +201,11 @@ function rRules(el){
 }
 
 function rMemo(el){
-  el.innerHTML='<div class="card"><div class="card-title">WAS FREUNDIN GESAGT HAT</div><div class="section-desc"><strong>Sofort hier rein wenn sie dir was sagt.</strong> \u201eMoment, ich schreib mir das auf weil es mir wichtig ist.\u201c</div><div class="memo-area"><textarea id="pMemo" placeholder="Termine, W\u00fcnsche, Infos...">'+eH(memos.partner)+'</textarea><button class="memo-save" onclick="saveMemo(\'partner\')">Speichern</button></div></div><div class="card"><div class="card-title">ARBEIT \u2014 OFFENE PUNKTE</div><div class="section-desc"><strong>Dein Arbeitspuffer.</strong> Alles was im Kopf kreist \u2192 hier abladen.</div><div class="memo-area"><textarea id="wMemo" placeholder="Offene Mails, Prozesse...">'+eH(memos.work)+'</textarea><button class="memo-save" onclick="saveMemo(\'work\')">Speichern</button></div></div>';
+  var pContent=memos.partner||'',wContent=memos.work||'';
+  el.innerHTML='<div class="card"><div class="memo-header"><div class="card-title" style="margin-bottom:0">WAS FREUNDIN GESAGT HAT</div>'+(editingMemo==='partner'?'':'<button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="startEditMemo(\'partner\')">Bearbeiten</button>')+'</div><div class="section-desc"><strong>Sofort hier rein wenn sie dir was sagt.</strong> \u201eMoment, ich schreib mir das auf weil es mir wichtig ist.\u201c</div>'+(editingMemo==='partner'?'<div class="memo-area"><textarea id="pMemo" placeholder="Termine, W\u00fcnsche, Infos...">'+eH(pContent)+'</textarea><div class="btn-row"><button class="memo-save" onclick="saveMemo(\'partner\')">Speichern</button><button class="btn-outline" onclick="cancelEditMemo()">Abbrechen</button></div></div>':'<div class="memo-display'+(pContent?'':' empty')+'">'+(pContent?eH(pContent):'Noch keine Notizen. Tippe \u201eBearbeiten\u201c um etwas einzutragen.')+'</div>')+'</div><div class="card"><div class="memo-header"><div class="card-title" style="margin-bottom:0">ARBEIT \u2014 OFFENE PUNKTE</div>'+(editingMemo==='work'?'':'<button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="startEditMemo(\'work\')">Bearbeiten</button>')+'</div><div class="section-desc"><strong>Dein Arbeitspuffer.</strong> Alles was im Kopf kreist \u2192 hier abladen.</div>'+(editingMemo==='work'?'<div class="memo-area"><textarea id="wMemo" placeholder="Offene Mails, Prozesse...">'+eH(wContent)+'</textarea><div class="btn-row"><button class="memo-save" onclick="saveMemo(\'work\')">Speichern</button><button class="btn-outline" onclick="cancelEditMemo()">Abbrechen</button></div></div>':'<div class="memo-display'+(wContent?'':' empty')+'">'+(wContent?eH(wContent):'Noch keine Notizen. Tippe \u201eBearbeiten\u201c um etwas einzutragen.')+'</div>')+'</div>';
 }
+function startEditMemo(t){editingMemo=t;render();setTimeout(function(){var el=document.getElementById(t==='partner'?'pMemo':'wMemo');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}},100)}
+function cancelEditMemo(){editingMemo=null;render()}
 
 function rMorning(el){
   el.innerHTML='<div class="card"><div class="card-title">MORGEN-CHECK</div><div class="section-desc"><strong>5 Minuten vor dem Losfahren.</strong> Setzt sich t\u00e4glich automatisch zur\u00fcck.</div><div class="checklist">'+mI.map(function(it,i){return'<div class="check-item '+(morningChecks[i]?'checked':'')+'" onclick="toggleMorning('+i+')"><div class="checkbox">'+(morningChecks[i]?'\u2713':'')+'</div>'+it+'</div>'}).join('')+'</div></div><div class="card"><div class="card-title">BILDSCHIRMZEIT</div><div class="section-desc"><strong>Doomscroll-Tracker.</strong> Ziel: unter 30 Min.</div><div class="phone-section"><div class="phone-counter '+(phoneMinutes.today>30?(phoneMinutes.today>60?'danger':'warning'):'')+'">'+phoneMinutes.today+' min</div><div class="phone-label">News / Sinnlos-Scroll</div><div class="phone-buttons"><button onclick="addPhoneTime(5)">+5</button><button onclick="addPhoneTime(10)">+10</button><button onclick="addPhoneTime(15)">+15</button><button onclick="resetPhone()">Reset</button></div></div></div>';
@@ -228,7 +234,7 @@ function addAppt(){var t=document.getElementById('tText'),d=document.getElementB
 function delAppt(i){appointments.splice(i,1);schS();render()}
 function toggleHabit(k){habits[k]=!habits[k];schS();render()}
 function toggleMorning(i){morningChecks[i]=!morningChecks[i];schS();render()}
-function saveMemo(t){var el=document.getElementById(t==='partner'?'pMemo':'wMemo');memos[t]=el.value;schS();var b=el.nextElementSibling;b.textContent='\u2713 Gespeichert';setTimeout(function(){b.textContent='Speichern'},1500)}
+function saveMemo(t){var el=document.getElementById(t==='partner'?'pMemo':'wMemo');memos[t]=el.value;schS();editingMemo=null;render()}
 function addPhoneTime(m){phoneMinutes.today+=m;phoneMinutes.date=tS;schS();render()}
 function resetPhone(){phoneMinutes.today=0;schS();render()}
 function saveSettings(){sC({binId:document.getElementById('binId').value.trim(),apiKey:document.getElementById('apiKey').value.trim()});var s=document.getElementById('sStatus');s.className='settings-status ok';s.textContent='\u2713 Gespeichert. Jetzt "Testen" klicken.'}
