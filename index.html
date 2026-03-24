@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Second Brain — Daniel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=DM+Mono:wght@300;400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232733;
+    --border: #2e3341;
+    --text: #e4e6ed;
+    --text-dim: #8b90a0;
+    --text-muted: #5a5f72;
+    --accent: #64b5f6;
+    --accent-glow: rgba(100, 181, 246, 0.15);
+    --green: #66bb6a;
+    --green-dim: rgba(102, 187, 106, 0.15);
+    --orange: #ffa726;
+    --orange-dim: rgba(255, 167, 38, 0.12);
+    --red: #ef5350;
+    --red-dim: rgba(239, 83, 80, 0.12);
+    --purple: #ab47bc;
+    --purple-dim: rgba(171, 71, 188, 0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 30px 0 20px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .header .subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .header .date-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-top: 10px;
+  }
+
+  /* Sync Status */
+  .sync-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  .sync-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+  }
+
+  .sync-dot.syncing {
+    background: var(--orange);
+    animation: pulse 1s infinite;
+  }
+
+  .sync-dot.error {
+    background: var(--red);
+  }
+
+  .sync-dot.offline {
+    background: var(--text-muted);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Navigation Tabs */
+  .nav {
+    display: flex;
+    gap: 4px;
+    margin: 24px 0 20px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 4px;
+    overflow-x: auto;
+  }
+
+  .nav button {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav button.active {
+    background: var(--surface2);
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .nav button:hover:not(.active) {
+    color: var(--text);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  /* Section Descriptions */
+  .section-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+    padding: 10px 14px;
+    background: var(--accent-glow);
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .section-desc strong { color: var(--accent); }
+
+  /* Quick Capture */
+  .capture-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .capture-area input, .capture-area select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .capture-area input:focus {
+    border-color: var(--accent);
+  }
+
+  .capture-area input { flex: 1; }
+  .capture-area select { width: auto; min-width: 100px; }
+
+  .capture-area button, .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .capture-area button:hover, .btn-primary:hover { opacity: 0.85; }
+
+  /* Capture Items */
+  .capture-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    font-size: 0.88rem;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .capture-item .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tag-arbeit { background: var(--accent-glow); color: var(--accent); }
+  .tag-privat { background: var(--green-dim); color: var(--green); }
+  .tag-gesundheit { background: var(--orange-dim); color: var(--orange); }
+  .tag-idee { background: var(--purple-dim); color: var(--purple); }
+
+  .capture-item .text { flex: 1; line-height: 1.4; }
+
+  .capture-item .delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .capture-item:hover .delete-btn { opacity: 1; }
+  .capture-item .delete-btn:hover { color: var(--red); }
+
+  /* Week Overview */
+  .week-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .day-row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px;
+    align-items: start;
+    padding: 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border);
+  }
+
+  .day-row.today {
+    border-left-color: var(--accent);
+    background: linear-gradient(135deg, var(--surface2), var(--accent-glow));
+  }
+
+  .day-name {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--text);
+    padding-top: 2px;
+  }
+
+  .day-name small {
+    display: block;
+    font-weight: 300;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .day-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .event-chip {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .event-work { background: var(--accent-glow); color: var(--accent); }
+  .event-family { background: var(--green-dim); color: var(--green); }
+  .event-sport { background: var(--orange-dim); color: var(--orange); }
+  .event-free { background: var(--purple-dim); color: var(--purple); }
+
+  /* Habits */
+  .habits-week {
+    display: grid;
+    grid-template-columns: 140px repeat(7, 1fr);
+    gap: 4px;
+    font-size: 0.78rem;
+  }
+
+  .habits-header {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 6px 0;
+    letter-spacing: 0.05em;
+  }
+
+  .habit-name {
+    padding: 8px 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+  }
+
+  .habit-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    cursor: pointer;
+  }
+
+  .habit-check {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+  }
+
+  .habit-check.done {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .habit-check:hover:not(.done) {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  /* Streak */
+  .streak-bar {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .streak-item {
+    text-align: center;
+  }
+
+  .streak-item .num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .streak-item .label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  /* Brain Rules */
+  .rules-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .rule {
+    padding: 14px 16px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+    font-size: 0.88rem;
+  }
+
+  .rule strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .rule .why {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Memo */
+  .memo-area {
+    margin-top: 12px;
+  }
+
+  .memo-area textarea {
+    width: 100%;
+    min-height: 100px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .memo-area textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .memo-area textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .memo-save {
+    margin-top: 8px;
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  /* Checklist */
+  .checklist {
+    display: grid;
+    gap: 8px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-size: 0.88rem;
+  }
+
+  .check-item.checked {
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+
+  .check-item .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.65rem;
+  }
+
+  .check-item.checked .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  /* Phone Timer */
+  .phone-section {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .phone-counter {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    color: var(--green);
+    margin: 10px 0;
+    transition: color 0.3s;
+  }
+
+  .phone-counter.warning { color: var(--orange); }
+  .phone-counter.danger { color: var(--red); }
+
+  .phone-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .phone-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .phone-buttons button {
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .phone-buttons button:hover {
+    border-color: var(--accent);
+  }
+
+  /* Focus Quote */
+  .focus-quote {
+    text-align: center;
+    padding: 20px;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Settings */
+  .settings-field {
+    margin-bottom: 14px;
+  }
+
+  .settings-field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .settings-field input {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    outline: none;
+  }
+
+  .settings-field input:focus {
+    border-color: var(--accent);
+  }
+
+  .settings-field .hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .settings-status {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    margin-top: 10px;
+  }
+
+  .settings-status.ok { background: var(--green-dim); color: var(--green); }
+  .settings-status.err { background: var(--red-dim); color: var(--red); }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .habits-week {
+      grid-template-columns: 100px repeat(7, 1fr);
+      font-size: 0.7rem;
+    }
+    .habit-check { width: 22px; height: 22px; }
+    .capture-area { flex-wrap: wrap; }
+    .capture-area select { flex: 1; }
+    .nav button { font-size: 0.7rem; padding: 8px 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+// ============ SYNC ENGINE (JSONBin) ============
+const CONFIG_KEY = 'sb_config';
+
+function getConfig() {
+  try {
+    return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+  } catch(e) { return {}; }
+}
+
+function saveConfig(cfg) {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+}
+
+let syncStatus = 'offline'; // 'ok', 'syncing', 'error', 'offline'
+let lastSyncTime = null;
+let syncTimeout = null;
+let cloudData = null;
+
+const DEFAULT_DATA = {
+  captures: [],
+  habits: {},
+  memos: { partner: '', work: '' },
+  morningChecks: {},
+  morningDate: '',
+  phoneMinutes: { today: 0, date: '' },
+};
+
+// Local fallback
+function loadLocal(key, fallback) {
+  try {
+    const d = localStorage.getItem('sb_' + key);
+    return d ? JSON.parse(d) : fallback;
+  } catch(e) { return fallback; }
+}
+
+function saveLocal(key, data) {
+  try { localStorage.setItem('sb_' + key, JSON.stringify(data)); } catch(e) {}
+}
+
+function getAllData() {
+  return {
+    captures,
+    habits,
+    memos,
+    morningChecks,
+    morningDate: loadLocal('morning_date', ''),
+    phoneMinutes,
+  };
+}
+
+function applyData(d) {
+  if (!d) return;
+  captures = d.captures || [];
+  habits = d.habits || {};
+  memos = d.memos || { partner: '', work: '' };
+  morningChecks = d.morningChecks || {};
+  if (d.morningDate) saveLocal('morning_date', d.morningDate);
+  phoneMinutes = d.phoneMinutes || { today: 0, date: '' };
+  // Save locally too
+  saveLocal('captures', captures);
+  saveLocal('habits', habits);
+  saveLocal('memos', memos);
+  saveLocal('morning', morningChecks);
+  saveLocal('phone', phoneMinutes);
+}
+
+async function cloudLoad() {
+  const cfg = getConfig();
+  if (!cfg.binId || !cfg.apiKey) { syncStatus = 'offline'; return null; }
+  syncStatus = 'syncing';
+  render();
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binId}/latest`, {
+      headers: { 'X-Master-Key': cfg.apiKey }
+    });
+    if (!res.ok) throw new Error('Load failed: ' + res.status);
+    const json = await res.json();
+    syncStatus = 'ok';
+    lastSyncTime = new Date();
+    return json.record || null;
+  } catch(e) {
+    console.error('Cloud load error:', e);
+    syncStatus = 'error';
+    return null;
+  }
+}
+
+async function cloudSave() {
+  const cfg = getConfig();
+  if (!cfg.binId || !cfg.apiKey) { syncStatus = 'offline'; return; }
+  syncStatus = 'syncing';
+  render();
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${cfg.binId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': cfg.apiKey,
+      },
+      body: JSON.stringify(getAllData()),
+    });
+    if (!res.ok) throw new Error('Save failed: ' + res.status);
+    syncStatus = 'ok';
+    lastSyncTime = new Date();
+  } catch(e) {
+    console.error('Cloud save error:', e);
+    syncStatus = 'error';
+  }
+  render();
+}
+
+// Debounced save — waits 1.5s after last change, then syncs
+function scheduleSave() {
+  // Always save locally immediately
+  saveLocal('captures', captures);
+  saveLocal('habits', habits);
+  saveLocal('memos', memos);
+  saveLocal('morning', morningChecks);
+  saveLocal('phone', phoneMinutes);
+  // Debounce cloud save
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => cloudSave(), 1500);
+}
+
+// ============ DATA ============
+let captures = loadLocal('captures', []);
+let habits = loadLocal('habits', {});
+let memos = loadLocal('memos', { partner: '', work: '' });
+let morningChecks = loadLocal('morning', {});
+let phoneMinutes = loadLocal('phone', { today: 0, date: '' });
+let currentTab = 'capture';
+
+const today = new Date();
+const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+const dayNamesFull = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const todayStr = today.toISOString().split('T')[0];
+const currentDay = today.getDay();
+
+// Reset morning checks if new day
+const lastMorning = loadLocal('morning_date', '');
+if (lastMorning !== todayStr) {
+  morningChecks = {};
+  saveLocal('morning', morningChecks);
+  saveLocal('morning_date', todayStr);
+}
+
+// Reset phone timer if new day
+if (phoneMinutes.date !== todayStr) {
+  phoneMinutes = { today: 0, date: todayStr };
+  saveLocal('phone', phoneMinutes);
+}
+
+// ============ WEEK SCHEDULE ============
+const weekSchedule = [
+  { day: 'Mo', label: 'Montag', events: [
+    { text: 'Arbeit 7:40–17:00', type: 'work' },
+    { text: 'Tochter & Hunde übernehmen', type: 'family' },
+    { text: 'Freundin trainiert (Abend)', type: 'free' },
+    { text: '→ Mini-Training möglich (20 Min)', type: 'sport' },
+  ]},
+  { day: 'Di', label: 'Dienstag', events: [
+    { text: 'Arbeit 7:40–16:00', type: 'work' },
+    { text: 'Freundin arbeitet NM (1h)', type: 'family' },
+    { text: 'Kinderturnen 17–18 Uhr', type: 'family' },
+    { text: '→ Gitarre 20 Min abends', type: 'free' },
+  ]},
+  { day: 'Mi', label: 'Mittwoch', events: [
+    { text: 'Arbeit 7:40–17:00', type: 'work' },
+    { text: 'Tochter & Hunde', type: 'family' },
+    { text: 'Freundin trainiert (Abend)', type: 'free' },
+    { text: '→ Kettlebell/Seil 20 Min', type: 'sport' },
+  ]},
+  { day: 'Do', label: 'Donnerstag', events: [
+    { text: 'Arbeit 7:40–16:00', type: 'work' },
+    { text: 'Tennis 16–18 Uhr', type: 'sport' },
+  ]},
+  { day: 'Fr', label: 'Freitag', events: [
+    { text: 'Arbeit 7:40–16:00', type: 'work' },
+    { text: 'Freundin trainiert NM', type: 'free' },
+    { text: 'Tochter & Hunde', type: 'family' },
+    { text: '→ Dehnen & Mobilität 20 Min', type: 'sport' },
+  ]},
+  { day: 'Sa', label: 'Samstag', events: [
+    { text: 'Schwimmen 6:00', type: 'sport' },
+    { text: 'Freundin arbeitet VM', type: 'free' },
+    { text: 'Papa-Tochter-Zeit', type: 'family' },
+    { text: '→ Gitarre 20 Min', type: 'free' },
+  ]},
+  { day: 'So', label: 'Sonntag', events: [
+    { text: 'Familientag', type: 'family' },
+    { text: '→ Woche planen (15 Min)', type: 'work' },
+    { text: '→ Dehnen & Mobilität', type: 'sport' },
+  ]},
+];
+
+const habitsList = [
+  { id: 'capture', name: '🧠 Brain Dump gemacht' },
+  { id: 'stretch', name: '🧘 Dehnen/Mobilität' },
+  { id: 'training', name: '💪 Training (jede Form)' },
+  { id: 'phone', name: '📵 Handy < 30 Min Doom' },
+  { id: 'partner', name: '💬 Freundin zugehört' },
+  { id: 'guitar', name: '🎸 Gitarre (auch 5 Min)' },
+];
+
+const brainRules = [
+  { title: 'ONE INBOX', text: 'Alles kommt hierher. Nicht ins Handy, nicht auf Zettel, nicht "merk ich mir". Sofort in den Brain Dump tippen.', why: 'Dein Arbeitsgedächtnis hat nur 4 Slots. Jeder offene Gedanke belegt einen.' },
+  { title: 'WENN FREUNDIN REDET → CAPTURE', text: 'Wenn dir deine Freundin etwas Wichtiges sagt: sofort hier notieren. Nicht "ja ich merk mir das". Sag ihr: "Moment, das schreib ich mir auf, weil es mir wichtig ist."', why: 'Das zeigt Wertschätzung UND entlastet dein Gehirn. Win-Win.' },
+  { title: '20 MINUTEN REGEL', text: 'Kein neues Vorhaben braucht eine Stunde. Gitarre: 20 Min. Training: 20 Min. Der Trick ist Regelmäßigkeit, nicht Länge.', why: 'Dein Gehirn baut Gewohnheiten über Frequenz auf, nicht über Dauer.' },
+  { title: 'NEWS-DIÄT', text: 'Maximal 10 Minuten Nachrichten am Tag. Nicht beim Aufwachen, nicht vor dem Schlafen. Die Welt brennt auch ohne dich als Zuschauer.', why: 'Doomscrolling aktiviert Cortisol → verschlechtert Gedächtnis → mehr Vergesslichkeit → mehr Stress.' },
+  { title: 'SUCHEN ELIMINIEREN', text: 'Schlüssel, Handy, Geldbörse: EINE feste Stelle. Immer. Wenn du es in der Hand hast, leg es dorthin. Keine Ausnahme.', why: 'Jede Suche kostet 5-15 Min kognitive Energie die du nicht hast.' },
+  { title: 'MORGENS 5-MIN-CHECK', text: 'Bevor du losfährst: Morgen-Checkliste hier durchgehen. Was steht heute an? Was hab ich vergessen?', why: 'Priming: Dein Gehirn arbeitet besser wenn es weiß was kommt.' },
+];
+
+const morningItems = [
+  'Second Brain checken — was steht heute an?',
+  'Brain Dump von gestern durchsehen',
+  'Schlüssel, Handy, Geldbörse am Platz?',
+  'Etwas Bestimmtes das Freundin gesagt hat?',
+  'Trinkflasche mit (Hydration = Gehirnleistung)',
+];
+
+// ============ RENDER ============
+function getWeekKey(habitId, dayOffset) {
+  const d = new Date(today);
+  const mondayOffset = (currentDay === 0 ? -6 : 1 - currentDay);
+  d.setDate(d.getDate() + mondayOffset + dayOffset);
+  return habitId + '_' + d.toISOString().split('T')[0];
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function syncStatusHtml() {
+  const labels = {
+    ok: 'Synchronisiert',
+    syncing: 'Synchronisiert...',
+    error: 'Sync-Fehler',
+    offline: 'Nur lokal (Einstellungen → Sync einrichten)',
+  };
+  const timeStr = lastSyncTime ? ` · ${lastSyncTime.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' })}` : '';
+  return `<div class="sync-bar"><span class="sync-dot ${syncStatus}"></span>${labels[syncStatus]}${timeStr}</div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+
+  const tabs = [
+    { id: 'capture', label: '🧠 Capture' },
+    { id: 'week', label: '📅 Woche' },
+    { id: 'habits', label: '✓ Habits' },
+    { id: 'rules', label: '⚡ Regeln' },
+    { id: 'memo', label: '💬 Memos' },
+    { id: 'morning', label: '☀ Morgen' },
+    { id: 'settings', label: '⚙' },
+  ];
+
+  app.innerHTML = `
+    <div class="header">
+      <h1>SECOND BRAIN</h1>
+      <div class="subtitle">EXTERNES GEDÄCHTNIS — DANIEL</div>
+      <div class="date-display">${dayNamesFull[currentDay]}, ${today.toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+      ${syncStatusHtml()}
+    </div>
+    <nav class="nav">
+      ${tabs.map(t => `<button class="${currentTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</button>`).join('')}
+    </nav>
+    <div id="content"></div>
+  `;
+
+  const content = document.getElementById('content');
+  switch(currentTab) {
+    case 'capture': renderCapture(content); break;
+    case 'week': renderWeek(content); break;
+    case 'habits': renderHabits(content); break;
+    case 'rules': renderRules(content); break;
+    case 'memo': renderMemo(content); break;
+    case 'morning': renderMorning(content); break;
+    case 'settings': renderSettings(content); break;
+  }
+}
+
+function renderCapture(el) {
+  const todayCaptures = captures.filter(c => c.date === todayStr);
+  const olderCaptures = captures.filter(c => c.date !== todayStr).slice(0, 20);
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">SOFORT ERFASSEN — WAS IST IM KOPF?</div>
+      <div class="section-desc"><strong>Das Herzstück.</strong> Alles was dir durch den Kopf geht, sofort hier rein tippen. Nicht später, nicht „merk ich mir". Gedanke → Eintippen → Kopf frei. Dein Kopf ist zum Denken da, nicht zum Speichern.</div>
+      <div class="capture-area">
+        <input type="text" id="captureInput" placeholder="Gedanke, Aufgabe, Info..." onkeypress="if(event.key==='Enter')addCapture()">
+        <select id="captureTag">
+          <option value="arbeit">Arbeit</option>
+          <option value="privat">Privat</option>
+          <option value="gesundheit">Gesundheit</option>
+          <option value="idee">Idee</option>
+        </select>
+        <button onclick="addCapture()">+</button>
+      </div>
+      ${todayCaptures.length > 0 ? `
+        <div class="card-title" style="margin-top:16px">HEUTE</div>
+        ${todayCaptures.map(c => renderCaptureItem(c, captures.indexOf(c))).join('')}
+      ` : '<div class="empty-state">Kopf leer? Gut. Oder: Noch nicht erfasst.</div>'}
+    </div>
+    ${olderCaptures.length > 0 ? `
+      <div class="card">
+        <div class="card-title">FRÜHERE EINTRÄGE</div>
+        ${olderCaptures.map(c => renderCaptureItem(c, captures.indexOf(c))).join('')}
+      </div>
+    ` : ''}
+  `;
+  setTimeout(() => document.getElementById('captureInput')?.focus(), 100);
+}
+
+function renderCaptureItem(c, idx) {
+  return `<div class="capture-item">
+    <span class="tag tag-${c.tag}">${c.tag}</span>
+    <span class="text">${escHtml(c.text)}</span>
+    <button class="delete-btn" onclick="deleteCapture(${idx})">×</button>
+  </div>`;
+}
+
+function renderWeek(el) {
+  const dayMap = { 'Mo': 1, 'Di': 2, 'Mi': 3, 'Do': 4, 'Fr': 5, 'Sa': 6, 'So': 0 };
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">DEIN WOCHENRHYTHMUS</div>
+      <div class="section-desc"><strong>Dein echter Wochenplan mit eingebauten Zeitfenstern.</strong> Mo & Mi Abend (Freundin trainiert) → 20 Min Kettlebell/Springschnur. Di & Sa → 20 Min Gitarre. Fr → Dehnen & Mobilität. Do → Tennis. Sa früh → Schwimmen. Die „→" Einträge sind deine neuen Fenster — klein, machbar, regelmäßig.</div>
+      <div class="focus-quote">„Nicht alles auf einmal. Ein Tag nach dem anderen."</div>
+      <div class="week-grid">
+        ${weekSchedule.map(day => `
+          <div class="day-row ${dayMap[day.day] === currentDay ? 'today' : ''}">
+            <div class="day-name">${day.day}${dayMap[day.day] === currentDay ? '<small>HEUTE</small>' : ''}</div>
+            <div class="day-events">
+              ${day.events.map(e => `<span class="event-chip event-${e.type}">${e.text}</span>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderHabits(el) {
+  const shortDays = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  const todayIdx = currentDay === 0 ? 6 : currentDay - 1;
+  const todayCompleted = habitsList.filter(h => habits[getWeekKey(h.id, todayIdx)]).length;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">WÖCHENTLICHE GEWOHNHEITEN</div>
+      <div class="section-desc"><strong>Sechs Gewohnheiten, mehr nicht.</strong> Hake ab was du heute geschafft hast. Es geht nicht um Perfektion — es geht um Sichtbarkeit. Wenn du siehst dass 4 von 7 Tagen ein ✓ haben, motiviert das mehr als jeder Vorsatz. Die wichtigste Gewohnheit: „Freundin zugehört" — dein Beziehungs-Gamechanger.</div>
+      <div class="habits-week">
+        <div class="habits-header"></div>
+        ${shortDays.map(d => `<div class="habits-header">${d}</div>`).join('')}
+        ${habitsList.map(h => `
+          <div class="habit-name">${h.name}</div>
+          ${shortDays.map((d, di) => {
+            const key = getWeekKey(h.id, di);
+            const done = habits[key];
+            return `<div class="habit-cell"><div class="habit-check ${done ? 'done' : ''}" onclick="toggleHabit('${key}')">${done ? '✓' : ''}</div></div>`;
+          }).join('')}
+        `).join('')}
+      </div>
+      <div class="streak-bar">
+        <div class="streak-item">
+          <div class="num">${todayCompleted}/${habitsList.length}</div>
+          <div class="label">HEUTE</div>
+        </div>
+        <div class="streak-item">
+          <div class="num">${Object.values(habits).filter(v => v).length}</div>
+          <div class="label">DIESE WOCHE</div>
+        </div>
+        <div class="streak-item">
+          <div class="num">${Math.round(Object.values(habits).filter(v => v).length / (habitsList.length * 7) * 100)}%</div>
+          <div class="label">ERFÜLLUNG</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderRules(el) {
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">DEINE GEHIRN-REGELN</div>
+      <div class="section-desc"><strong>Sechs Regeln mit dem wissenschaftlichen Warum dahinter.</strong> Lies sie einmal durch, dann verstehst du warum das System so aufgebaut ist. Komm hierher zurück wenn du merkst dass du in alte Muster rutschst.</div>
+      <div class="focus-quote">„Du bist nicht vergesslich. Du bist überlastet. Das hier ändert das."</div>
+      <div class="rules-list">
+        ${brainRules.map(r => `
+          <div class="rule">
+            <strong>${r.title}:</strong> ${r.text}
+            <span class="why">Warum: ${r.why}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderMemo(el) {
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">💬 WAS FREUNDIN GESAGT HAT</div>
+      <div class="section-desc"><strong>Wenn sie dir was Wichtiges sagt → sofort hier rein.</strong> Termine, Wünsche, Infos über die Kleine, Einkäufe. Sag ihr: „Moment, ich schreib mir das auf weil es mir wichtig ist." Das zeigt Wertschätzung UND entlastet dein Gehirn.</div>
+      <div class="memo-area">
+        <textarea id="partnerMemo" placeholder="Z.B.: 'Samstag kommt ihre Mutter.' 'Tochter braucht neue Schuhe Größe 24.'">${escHtml(memos.partner)}</textarea>
+        <button class="memo-save" onclick="saveMemo('partner')">Speichern</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 ARBEIT — OFFENE PUNKTE</div>
+      <div class="section-desc"><strong>Dein Arbeitspuffer.</strong> Offene Mails, wartende Prozesse, Rückrufe, ungeklärte Abläufe an der neuen Bankstelle. Alles was im Kopf kreist und dich von zuhause ablenkt → hier abladen. So bleibt Arbeit in der Arbeit.</div>
+      <div class="memo-area">
+        <textarea id="workMemo" placeholder="Offene Mails, wartende Prozesse, Rückrufe...">${escHtml(memos.work)}</textarea>
+        <button class="memo-save" onclick="saveMemo('work')">Speichern</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderMorning(el) {
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">☀ MORGEN-CHECK (VOR DEM LOSFAHREN)</div>
+      <div class="section-desc"><strong>5 Minuten die deinen ganzen Tag retten.</strong> Geh die Liste durch bevor du losfährst. Priming: Dein Gehirn arbeitet besser wenn es weiß was kommt. Die Checkliste setzt sich jeden Tag automatisch zurück.</div>
+      <div class="checklist">
+        ${morningItems.map((item, i) => `
+          <div class="check-item ${morningChecks[i] ? 'checked' : ''}" onclick="toggleMorning(${i})">
+            <div class="checkbox">${morningChecks[i] ? '✓' : ''}</div>
+            ${item}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📵 BILDSCHIRMZEIT HEUTE</div>
+      <div class="section-desc"><strong>Doomscroll-Tracker.</strong> Tracke ehrlich wie viel Zeit du mit News & sinnlosem Scrollen verbringst. Ziel: unter 30 Min. Grün = gut, Orange = Achtung, Rot = dein Cortisol feiert gerade eine Party auf Kosten deines Gedächtnisses.</div>
+      <div class="phone-section">
+        <div class="phone-counter ${phoneMinutes.today > 30 ? (phoneMinutes.today > 60 ? 'danger' : 'warning') : ''}">${phoneMinutes.today} min</div>
+        <div class="phone-label">Doomscroll / Nachrichten / Sinnlos-Scroll</div>
+        <div class="phone-buttons">
+          <button onclick="addPhoneTime(5)">+5 Min</button>
+          <button onclick="addPhoneTime(10)">+10 Min</button>
+          <button onclick="addPhoneTime(15)">+15 Min</button>
+          <button onclick="resetPhone()">Reset</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSettings(el) {
+  const cfg = getConfig();
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">⚙ SYNC-EINSTELLUNGEN</div>
+      <div class="section-desc"><strong>Hier verbindest du dein Second Brain mit der Cloud.</strong> Damit synchronisieren sich deine Daten zwischen iPhone, iPad und Mac Mini. Du brauchst einen JSONBin.io-Account (kostenlos) und die zwei Werte unten.</div>
+      <div class="settings-field">
+        <label>JSONBin Bin-ID</label>
+        <input type="text" id="binId" value="${escHtml(cfg.binId || '')}" placeholder="z.B. 65a1b2c3d4e5f6...">
+        <div class="hint">Findest du auf jsonbin.io unter deinem Bin → die ID in der URL</div>
+      </div>
+      <div class="settings-field">
+        <label>JSONBin API-Key (Master Key)</label>
+        <input type="password" id="apiKey" value="${escHtml(cfg.apiKey || '')}" placeholder="z.B. $2a$10$...">
+        <div class="hint">Findest du unter jsonbin.io → API Keys</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+        <button class="btn-primary" onclick="saveSettings()">Speichern & Verbinden</button>
+        <button class="btn-primary" style="background:var(--orange)" onclick="testSync()">Sync testen</button>
+        <button class="btn-primary" style="background:var(--purple)" onclick="forceUpload()">Lokale Daten hochladen</button>
+      </div>
+      <div id="settingsStatus"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">ANLEITUNG</div>
+      <div class="rules-list">
+        <div class="rule">
+          <strong>1.</strong> Geh zu <strong>jsonbin.io</strong> und logge dich ein.
+          <span class="why">Falls noch nicht geschehen: kostenlosen Account erstellen.</span>
+        </div>
+        <div class="rule">
+          <strong>2.</strong> Klicke auf <strong>„Create a Bin"</strong>. Inhalt: einfach <code>{}</code> eingeben. Speichern.
+          <span class="why">Das erstellt deinen Datenspeicher in der Cloud.</span>
+        </div>
+        <div class="rule">
+          <strong>3.</strong> Kopiere die <strong>Bin-ID</strong> (steht in der URL nach /b/) und füge sie oben ein.
+          <span class="why">Sieht aus wie: 65a1b2c3d4e5f6a7b8c9d0e1</span>
+        </div>
+        <div class="rule">
+          <strong>4.</strong> Geh zu <strong>API Keys</strong> (oben rechts im Menü). Kopiere deinen <strong>Master Key</strong> und füge ihn oben ein.
+          <span class="why">Beginnt mit $2a$10$ oder $2b$10$</span>
+        </div>
+        <div class="rule">
+          <strong>5.</strong> Klicke <strong>„Speichern & Verbinden"</strong>, dann <strong>„Lokale Daten hochladen"</strong>.
+          <span class="why">Ab jetzt synchronisiert sich alles automatisch!</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ ACTIONS ============
+function switchTab(tab) {
+  currentTab = tab;
+  render();
+}
+
+function addCapture() {
+  const input = document.getElementById('captureInput');
+  const tag = document.getElementById('captureTag');
+  if (!input.value.trim()) return;
+  captures.unshift({
+    text: input.value.trim(),
+    tag: tag.value,
+    date: todayStr,
+    time: new Date().toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' })
+  });
+  scheduleSave();
+  render();
+}
+
+function deleteCapture(idx) {
+  captures.splice(idx, 1);
+  scheduleSave();
+  render();
+}
+
+function toggleHabit(key) {
+  habits[key] = !habits[key];
+  scheduleSave();
+  render();
+}
+
+function toggleMorning(idx) {
+  morningChecks[idx] = !morningChecks[idx];
+  scheduleSave();
+  render();
+}
+
+function saveMemo(type) {
+  const el = document.getElementById(type === 'partner' ? 'partnerMemo' : 'workMemo');
+  memos[type] = el.value;
+  scheduleSave();
+  const btn = el.nextElementSibling;
+  btn.textContent = '✓ Gespeichert';
+  setTimeout(() => btn.textContent = 'Speichern', 1500);
+}
+
+function addPhoneTime(min) {
+  phoneMinutes.today += min;
+  phoneMinutes.date = todayStr;
+  scheduleSave();
+  render();
+}
+
+function resetPhone() {
+  phoneMinutes.today = 0;
+  scheduleSave();
+  render();
+}
+
+// Settings actions
+function saveSettings() {
+  const binId = document.getElementById('binId').value.trim();
+  const apiKey = document.getElementById('apiKey').value.trim();
+  saveConfig({ binId, apiKey });
+  const status = document.getElementById('settingsStatus');
+  status.className = 'settings-status ok';
+  status.textContent = '✓ Einstellungen gespeichert. Klicke jetzt "Sync testen".';
+}
+
+async function testSync() {
+  const status = document.getElementById('settingsStatus');
+  status.className = 'settings-status';
+  status.style.background = 'var(--accent-glow)';
+  status.style.color = 'var(--accent)';
+  status.textContent = 'Verbinde...';
+  const data = await cloudLoad();
+  if (syncStatus === 'ok') {
+    status.className = 'settings-status ok';
+    status.textContent = '✓ Verbindung erfolgreich! Daten gefunden.';
+    if (data && data.captures && data.captures.length > 0) {
+      applyData(data);
+      status.textContent += ` ${data.captures.length} Captures geladen.`;
+    }
+  } else {
+    status.className = 'settings-status err';
+    status.textContent = '✗ Verbindung fehlgeschlagen. Prüfe Bin-ID und API-Key.';
+  }
+  render();
+  // Re-show settings after render
+  currentTab = 'settings';
+  render();
+}
+
+async function forceUpload() {
+  const status = document.getElementById('settingsStatus');
+  status.className = 'settings-status';
+  status.style.background = 'var(--accent-glow)';
+  status.style.color = 'var(--accent)';
+  status.textContent = 'Lade hoch...';
+  await cloudSave();
+  if (syncStatus === 'ok') {
+    status.className = 'settings-status ok';
+    status.textContent = '✓ Alle lokalen Daten erfolgreich hochgeladen!';
+  } else {
+    status.className = 'settings-status err';
+    status.textContent = '✗ Upload fehlgeschlagen. Prüfe deine Verbindung.';
+  }
+}
+
+// ============ INIT ============
+render();
+
+// Try initial cloud load if configured
+(async () => {
+  const cfg = getConfig();
+  if (cfg.binId && cfg.apiKey) {
+    const data = await cloudLoad();
+    if (data && data.captures) {
+      applyData(data);
+      render();
+    }
+  }
+})();
+</script>
+</body>
+</html>
