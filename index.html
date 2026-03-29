@@ -9,7 +9,7 @@
 <title>Second Brain</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700&family=DM+Mono:wght@300;400&display=swap');
-  :root {
+  :root{
     --bg:#f5f0e8;--surface:#ffffff;--surface2:#ece7df;--border:#ddd6ca;
     --text:#2c2825;--text-dim:#6b635a;--text-muted:#9e958a;
     --accent:#3a7ca5;--accent-light:rgba(58,124,165,0.1);
@@ -31,26 +31,34 @@
   .sync-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
   .sync-dot.ok{background:var(--green)}.sync-dot.syncing{background:var(--orange);animation:pulse 1s infinite}.sync-dot.error{background:var(--red)}.sync-dot.offline{background:var(--text-muted)}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:6px 2px;padding-bottom:calc(6px + var(--safe-bottom));z-index:100}
-  .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 1px;background:transparent;border:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.55rem;font-weight:500;cursor:pointer;border-radius:8px;min-width:0}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:4px 1px;padding-bottom:calc(4px + var(--safe-bottom));z-index:100}
+  .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 1px;background:transparent;border:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.48rem;font-weight:500;cursor:pointer;border-radius:6px;min-width:0}
   .bottom-nav button.active{color:var(--accent)}
-  .bottom-nav button .ni{font-size:1.15rem;line-height:1}
+  .bottom-nav button .ni{font-size:1.05rem;line-height:1}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
   .card-title{font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+  .card-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .card-title-row .card-title{margin-bottom:0}
   .section-desc{font-size:0.8rem;color:var(--text-dim);line-height:1.5;padding:10px 12px;background:var(--accent-light);border-radius:var(--radius-sm);margin-bottom:14px;border-left:3px solid var(--accent)}
   .section-desc strong{color:var(--accent)}
   .capture-area{display:flex;gap:8px;margin-bottom:10px}
   .capture-area input,.capture-area select,input[type="text"],input[type="date"],input[type="password"]{font-family:'DM Sans',sans-serif;font-size:16px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:var(--radius-sm);outline:none}
-  .capture-area input:focus,input:focus,textarea:focus{border-color:var(--accent)}
+  .capture-area input:focus,input:focus,textarea:focus,select:focus{border-color:var(--accent)}
   .capture-area input{flex:1;min-width:0}.capture-area select{width:auto;font-size:14px}
+  select{font-family:'DM Sans',sans-serif;font-size:14px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:var(--radius-sm);outline:none}
   .btn-primary{background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;white-space:nowrap}
   .btn-small{background:var(--accent);color:#fff;border:none;padding:6px 14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer}
   .btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:6px 14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer}
-  .capture-item{display:flex;align-items:flex-start;gap:8px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px;font-size:0.85rem;animation:slideIn 0.2s ease}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .task-item{display:flex;align-items:flex-start;gap:8px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px;font-size:0.85rem;animation:slideIn 0.2s ease}
+  .task-item.done{opacity:0.45}
+  .task-item.done .task-text{text-decoration:line-through}
   @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  .task-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:transparent;flex-shrink:0;margin-top:1px}
+  .task-check.done{background:var(--green);border-color:var(--green);color:white}
+  .task-text{flex:1;line-height:1.4}
   .tag{font-family:'DM Mono',monospace;font-size:0.6rem;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;font-weight:500}
   .tag-arbeit{background:var(--accent-light);color:var(--accent)}.tag-privat{background:var(--green-light);color:var(--green)}.tag-gesundheit{background:var(--orange-light);color:var(--orange)}.tag-idee{background:var(--purple-light);color:var(--purple)}
-  .capture-item .text{flex:1;line-height:1.4}
   .delete-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0 4px;line-height:1}.delete-btn:active{color:var(--red)}
   .week-grid{display:grid;gap:6px}
   .day-row{display:grid;grid-template-columns:52px 1fr 32px;gap:8px;align-items:start;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);border-left:3px solid var(--border)}
@@ -69,7 +77,7 @@
   .modal-close{background:var(--surface2);border:none;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center}
   .modal-event-row{display:flex;gap:6px;margin-bottom:8px;align-items:center}
   .modal-event-row input{flex:1;min-width:0;font-size:14px;padding:8px 10px}
-  .modal-event-row select{font-size:13px;padding:8px 6px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);color:var(--text)}
+  .modal-event-row select{font-size:13px;padding:8px 6px}
   .appointment-item{display:flex;gap:10px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px;align-items:flex-start;animation:slideIn 0.2s ease}
   .appointment-date{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);white-space:nowrap;padding-top:2px;min-width:55px}
   .appointment-text{flex:1;font-size:0.85rem;line-height:1.4}
@@ -88,12 +96,6 @@
   .rules-list{display:grid;gap:8px}
   .rule{padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);border-left:3px solid var(--accent);line-height:1.5;font-size:0.85rem}
   .rule strong{color:var(--accent)}.rule .why{display:block;font-size:0.75rem;color:var(--text-dim);margin-top:4px;font-style:italic}
-  .memo-area textarea{width:100%;min-height:90px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:10px 12px;border-radius:var(--radius-sm);outline:none;resize:vertical;line-height:1.5}
-  .memo-area textarea::placeholder{color:var(--text-muted)}
-  .memo-display{padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-size:0.88rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:40px;color:var(--text)}
-  .memo-display.empty{color:var(--text-muted);font-style:italic}
-  .memo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .memo-save{margin-top:8px;background:var(--green);color:white;border:none;padding:8px 14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer}
   .checklist{display:grid;gap:6px}
   .check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);cursor:pointer;font-size:0.85rem}
   .check-item.checked{opacity:0.45;text-decoration:line-through}
@@ -114,7 +116,20 @@
   .settings-field .hint{font-size:0.68rem;color:var(--text-muted);margin-top:3px}
   .settings-status{padding:10px 12px;border-radius:var(--radius-sm);font-size:0.8rem;margin-top:10px}
   .settings-status.ok{background:var(--green-light);color:var(--green)}.settings-status.err{background:var(--red-light);color:var(--red)}
-  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .family-person{margin-bottom:8px}
+  .family-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--accent-light);border-radius:var(--radius-sm) var(--radius-sm) 0 0;cursor:pointer;font-weight:600;font-size:0.88rem;border:1px solid var(--border);border-bottom:none}
+  .family-header .toggle{color:var(--text-muted);font-size:0.8rem}
+  .family-body{border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);padding:10px 12px}
+  .family-body.collapsed{display:none}
+  .family-entry{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.84rem}
+  .family-entry:last-child{border-bottom:none}
+  .family-label{font-weight:600;color:var(--accent);min-width:70px;font-size:0.75rem;padding-top:2px}
+  .family-value{flex:1;line-height:1.4}
+  .memo-area textarea{width:100%;min-height:60px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;padding:10px 12px;border-radius:var(--radius-sm);outline:none;resize:vertical;line-height:1.5}
+  .memo-area textarea::placeholder{color:var(--text-muted)}
+  .tab-switch{display:flex;gap:4px;margin-bottom:14px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px}
+  .tab-switch button{flex:1;padding:8px 6px;background:transparent;border:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;cursor:pointer;border-radius:6px}
+  .tab-switch button.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.08)}
   @media(max-width:380px){.habit-row{grid-template-columns:1fr repeat(7,26px)}.habits-day-headers{grid-template-columns:1fr repeat(7,26px)}.habit-check{width:26px;height:26px}}
 </style>
 </head>
@@ -122,127 +137,193 @@
 <div class="app" id="app"></div>
 <div id="modal-root"></div>
 <script>
-const CK='sb_config';
+// === STORAGE ===
+var CK='sb_config';
 function gC(){try{return JSON.parse(localStorage.getItem(CK))||{}}catch(e){return{}}}
 function sC(c){localStorage.setItem(CK,JSON.stringify(c))}
-let ss='offline',lst=null,st=null;
-function lL(k,f){try{const d=localStorage.getItem('sb_'+k);return d?JSON.parse(d):f}catch(e){return f}}
+var ss='offline',lst=null,st=null;
+function lL(k,f){try{var d=localStorage.getItem('sb_'+k);return d?JSON.parse(d):f}catch(e){return f}}
 function sL(k,d){try{localStorage.setItem('sb_'+k,JSON.stringify(d))}catch(e){}}
-function gAD(){return{captures,habits,memos,morningChecks,morningDate:lL('morning_date',''),phoneMinutes,weekEvents,appointments,habitNames:hL}}
-function aD(d){if(!d)return;captures=d.captures||[];habits=d.habits||{};memos=d.memos||{partner:'',work:''};morningChecks=d.morningChecks||{};if(d.morningDate)sL('morning_date',d.morningDate);phoneMinutes=d.phoneMinutes||{today:0,date:''};if(d.weekEvents)weekEvents=d.weekEvents;if(d.appointments)appointments=d.appointments;if(d.habitNames)hL=d.habitNames;sL('captures',captures);sL('habits',habits);sL('memos',memos);sL('morning',morningChecks);sL('phone',phoneMinutes);sL('weekEvents',weekEvents);sL('appointments',appointments);sL('habitNames',hL)}
-async function cL(){const c=gC();if(!c.binId||!c.apiKey){ss='offline';return null}ss='syncing';render();try{const r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId+'/latest',{headers:{'X-Master-Key':c.apiKey}});if(!r.ok)throw new Error(r.status);const j=await r.json();ss='ok';lst=new Date();return j.record||null}catch(e){ss='error';return null}}
-async function cS(){const c=gC();if(!c.binId||!c.apiKey){ss='offline';return}ss='syncing';render();try{const r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':c.apiKey},body:JSON.stringify(gAD())});if(!r.ok)throw new Error(r.status);ss='ok';lst=new Date()}catch(e){ss='error'}render()}
-function schS(){sL('captures',captures);sL('habits',habits);sL('memos',memos);sL('morning',morningChecks);sL('phone',phoneMinutes);sL('weekEvents',weekEvents);sL('appointments',appointments);sL('habitNames',hL);if(st)clearTimeout(st);st=setTimeout(()=>cS(),1500)}
+function gAD(){return{captures:captures,habits:habits,morningChecks:morningChecks,morningDate:lL('morning_date',''),phoneMinutes:phoneMinutes,weekEvents:weekEvents,appointments:appointments,habitNames:hL,todos:todos,memoPartner:memoPartner,memoWork:memoWork,familyData:familyData}}
+function aD(d){if(!d)return;captures=d.captures||[];habits=d.habits||{};morningChecks=d.morningChecks||{};if(d.morningDate)sL('morning_date',d.morningDate);phoneMinutes=d.phoneMinutes||{today:0,date:''};if(d.weekEvents)weekEvents=d.weekEvents;if(d.appointments)appointments=d.appointments;if(d.habitNames)hL=d.habitNames;if(d.todos)todos=d.todos;if(d.memoPartner)memoPartner=d.memoPartner;if(d.memoWork)memoWork=d.memoWork;if(d.familyData)familyData=d.familyData;saveAll()}
+function saveAll(){sL('captures',captures);sL('habits',habits);sL('morning',morningChecks);sL('phone',phoneMinutes);sL('weekEvents',weekEvents);sL('appointments',appointments);sL('habitNames',hL);sL('todos',todos);sL('memoPartner',memoPartner);sL('memoWork',memoWork);sL('familyData',familyData)}
+async function cLoad(){var c=gC();if(!c.binId||!c.apiKey){ss='offline';return null}ss='syncing';render();try{var r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId+'/latest',{headers:{'X-Master-Key':c.apiKey}});if(!r.ok)throw new Error(r.status);var j=await r.json();ss='ok';lst=new Date();return j.record||null}catch(e){ss='error';return null}}
+async function cSave(){var c=gC();if(!c.binId||!c.apiKey){ss='offline';return}ss='syncing';render();try{var r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':c.apiKey},body:JSON.stringify(gAD())});if(!r.ok)throw new Error(r.status);ss='ok';lst=new Date()}catch(e){ss='error'}render()}
+function schS(){saveAll();if(st)clearTimeout(st);st=setTimeout(function(){cSave()},1500)}
 
-let captures=lL('captures',[]),habits=lL('habits',{}),memos=lL('memos',{partner:'',work:''}),morningChecks=lL('morning',{}),phoneMinutes=lL('phone',{today:0,date:''}),appointments=lL('appointments',[]),currentTab='capture',editingDay=null,editingMemo=null;
-const today=new Date(),dN=['So','Mo','Di','Mi','Do','Fr','Sa'],dNF=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],tS=today.toISOString().split('T')[0],cD=today.getDay();
-const lm=lL('morning_date','');if(lm!==tS){morningChecks={};sL('morning',morningChecks);sL('morning_date',tS)}
+// === DATA ===
+var captures=lL('captures',[]);
+var habits=lL('habits',{});
+var morningChecks=lL('morning',{});
+var phoneMinutes=lL('phone',{today:0,date:''});
+var appointments=lL('appointments',[]);
+var todos=lL('todos',[]);
+var memoPartner=lL('memoPartner',[]);
+var memoWork=lL('memoWork',[]);
+var familyData=lL('familyData',{
+  ilvy:[{label:'Alter',value:'2 Jahre'},{label:'Kleidung',value:''},{label:'Schuhe',value:''},{label:'Geschenkideen',value:''},{label:'Notizen',value:''}],
+  elias:[{label:'Kleidung',value:''},{label:'Schuhe',value:''},{label:'Geschenkideen',value:''},{label:'Notizen',value:''}],
+  kerstin:[{label:'Kleidung',value:''},{label:'Schuhe',value:''},{label:'Geschenkideen',value:''},{label:'Notizen',value:''}],
+  coco:[{label:'Futter',value:''},{label:'Tierarzt',value:''},{label:'Notizen',value:''}]
+});
+var currentTab='capture',editingDay=null,memoSubTab='partner',familyOpen={ilvy:true,elias:false,kerstin:false,coco:false};
+
+var today=new Date();
+var dNF=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+var tS=today.toISOString().split('T')[0];
+var cD=today.getDay();
+var lm=lL('morning_date','');if(lm!==tS){morningChecks={};sL('morning',morningChecks);sL('morning_date',tS)}
 if(phoneMinutes.date!==tS){phoneMinutes={today:0,date:tS};sL('phone',phoneMinutes)}
 
-const dW={Mo:[{text:'Arbeit 7:40\u201317:00',type:'work'},{text:'Tochter & Hunde',type:'family'},{text:'Freundin trainiert (Abend)',type:'free'},{text:'\u2192 Mini-Training 20 Min',type:'sport'}],Di:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Freundin arbeitet NM',type:'family'},{text:'Kinderturnen 17\u201318',type:'family'},{text:'\u2192 Gitarre 20 Min',type:'free'}],Mi:[{text:'Arbeit 7:40\u201317:00',type:'work'},{text:'Tochter & Hunde',type:'family'},{text:'Freundin trainiert (Abend)',type:'free'},{text:'\u2192 Kettlebell/Seil 20 Min',type:'sport'}],Do:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Tennis 16\u201318',type:'sport'}],Fr:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Freundin trainiert NM',type:'free'},{text:'Tochter & Hunde',type:'family'},{text:'\u2192 Dehnen & Mobilit\u00e4t 20 Min',type:'sport'}],Sa:[{text:'Schwimmen 6:00',type:'sport'},{text:'Freundin arbeitet VM',type:'free'},{text:'Papa-Tochter-Zeit',type:'family'},{text:'\u2192 Gitarre 20 Min',type:'free'}],So:[{text:'Familientag',type:'family'},{text:'\u2192 Woche planen 15 Min',type:'work'},{text:'\u2192 Dehnen & Mobilit\u00e4t',type:'sport'}]};
-let weekEvents=lL('weekEvents',dW);
-
-const hLDefault=[{id:'h0',name:'Brain Dump gemacht'},{id:'h1',name:'Dehnen/Mobilit\u00e4t'},{id:'h2',name:'Training (jede Form)'},{id:'h3',name:'Handy < 30 Min Doom'},{id:'h4',name:'Freundin zugeh\u00f6rt'},{id:'h5',name:'Gitarre (auch 5 Min)'}];
+var dW={Mo:[{text:'Arbeit 7:40\u201317:00',type:'work'},{text:'Tochter & Hunde',type:'family'},{text:'Freundin trainiert (Abend)',type:'free'},{text:'\u2192 Mini-Training 20 Min',type:'sport'}],Di:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Freundin arbeitet NM',type:'family'},{text:'Kinderturnen 17\u201318',type:'family'},{text:'\u2192 Gitarre 20 Min',type:'free'}],Mi:[{text:'Arbeit 7:40\u201317:00',type:'work'},{text:'Tochter & Hunde',type:'family'},{text:'Freundin trainiert (Abend)',type:'free'},{text:'\u2192 Kettlebell/Seil 20 Min',type:'sport'}],Do:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Tennis 16\u201318',type:'sport'}],Fr:[{text:'Arbeit 7:40\u201316:00',type:'work'},{text:'Freundin trainiert NM',type:'free'},{text:'Tochter & Hunde',type:'family'},{text:'\u2192 Dehnen & Mobilit\u00e4t 20 Min',type:'sport'}],Sa:[{text:'Schwimmen 6:00',type:'sport'},{text:'Freundin arbeitet VM',type:'free'},{text:'Papa-Tochter-Zeit',type:'family'},{text:'\u2192 Gitarre 20 Min',type:'free'}],So:[{text:'Familientag',type:'family'},{text:'\u2192 Woche planen 15 Min',type:'work'},{text:'\u2192 Dehnen & Mobilit\u00e4t',type:'sport'}]};
+var weekEvents=lL('weekEvents',dW);
+var hLDefault=[{id:'h0',name:'Brain Dump gemacht'},{id:'h1',name:'Dehnen/Mobilit\u00e4t'},{id:'h2',name:'Training (jede Form)'},{id:'h3',name:'Handy < 30 Min Doom'},{id:'h4',name:'Freundin zugeh\u00f6rt'},{id:'h5',name:'Gitarre (auch 5 Min)'}];
 var hL=lL('habitNames',hLDefault);
-const bR=[{title:'ONE INBOX',text:'Alles kommt hierher. Nicht ins Handy, nicht auf Zettel. Sofort in den Brain Dump.',why:'Dein Arbeitsged\u00e4chtnis hat nur 4 Slots. Jeder offene Gedanke belegt einen.'},{title:'FREUNDIN REDET \u2192 CAPTURE',text:'Sofort hier notieren. Sag: \u201eMoment, das schreib ich mir auf, weil es mir wichtig ist.\u201c',why:'Zeigt Wertsch\u00e4tzung UND entlastet dein Gehirn.'},{title:'20 MINUTEN REGEL',text:'Kein Vorhaben braucht eine Stunde. Gitarre: 20 Min. Training: 20 Min.',why:'Gehirn baut Gewohnheiten \u00fcber Frequenz auf, nicht \u00fcber Dauer.'},{title:'NEWS-DI\u00c4T',text:'Max 10 Min Nachrichten am Tag. Nicht beim Aufwachen, nicht vor dem Schlafen.',why:'Doomscrolling \u2192 Cortisol \u2192 schlechteres Ged\u00e4chtnis.'},{title:'SUCHEN ELIMINIEREN',text:'Schl\u00fcssel, Handy, Geldb\u00f6rse: EINE feste Stelle. Immer.',why:'Jede Suche kostet 5-15 Min kognitive Energie.'},{title:'MORGENS 5-MIN-CHECK',text:'Vor dem Losfahren: Morgen-Checkliste durchgehen.',why:'Priming: Gehirn arbeitet besser wenn es wei\u00df was kommt.'}];
-const mI=['Second Brain checken \u2014 was steht heute an?','Brain Dump von gestern durchsehen','Schl\u00fcssel, Handy, Geldb\u00f6rse am Platz?','Etwas das Freundin gesagt hat?','Trinkflasche mit'];
+var bR=[{title:'ONE INBOX',text:'Alles kommt in den Brain Dump. Nicht ins Handy, nicht auf Zettel.',why:'Arbeitsged\u00e4chtnis hat nur 4 Slots.'},{title:'FREUNDIN REDET \u2192 MEMO',text:'Sofort unter Memos notieren. Sag: \u201eMoment, ich schreib das auf.\u201c',why:'Zeigt Wertsch\u00e4tzung UND entlastet dein Gehirn.'},{title:'20 MINUTEN REGEL',text:'Kein Vorhaben braucht eine Stunde. Regelm\u00e4\u00dfigkeit > Dauer.',why:'Gehirn baut Gewohnheiten \u00fcber Frequenz auf.'},{title:'NEWS-DI\u00c4T',text:'Max 10 Min Nachrichten am Tag.',why:'Doomscrolling \u2192 Cortisol \u2192 schlechteres Ged\u00e4chtnis.'},{title:'SUCHEN ELIMINIEREN',text:'Schl\u00fcssel, Handy, Geldb\u00f6rse: EINE feste Stelle.',why:'Jede Suche kostet 5-15 Min kognitive Energie.'},{title:'MORGENS 5-MIN-CHECK',text:'Vor dem Losfahren: Morgen-Tab durchgehen.',why:'Priming: Gehirn arbeitet besser wenn es wei\u00df was kommt.'}];
+var mI=['Second Brain checken','Brain Dump von gestern durchsehen','Schl\u00fcssel, Handy, Geldb\u00f6rse am Platz?','Memo: Etwas das Freundin gesagt hat?','Trinkflasche mit'];
 
-function gWK(h,o){const d=new Date(today);d.setDate(d.getDate()+(cD===0?-6:1-cD)+o);return h+'_'+d.toISOString().split('T')[0]}
-function eH(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+// === HELPERS ===
+function gWK(h,o){var d=new Date(today);d.setDate(d.getDate()+(cD===0?-6:1-cD)+o);return h+'_'+d.toISOString().split('T')[0]}
+function eH(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function fD(ds){return new Date(ds+'T00:00:00').toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit'})}
 function dDf(d1,d2){return Math.floor((new Date(d1+'T00:00:00')-new Date(d2+'T00:00:00'))/864e5)}
 
+// === RENDER ===
 function render(){
-  const app=document.getElementById('app');
-  const sl={ok:'Sync OK',syncing:'Synct...',error:'Sync-Fehler',offline:'Nur lokal'};
-  const ts=lst?' \u00b7 '+lst.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}):'';
+  var app=document.getElementById('app');
+  var sl={ok:'Sync OK',syncing:'Synct...',error:'Sync-Fehler',offline:'Nur lokal'};
+  var ts=lst?' \u00b7 '+lst.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'}):'';
   app.innerHTML='<div class="header"><h1>SECOND BRAIN</h1><div class="date-display">'+dNF[cD]+', '+today.toLocaleDateString('de-AT',{day:'numeric',month:'long',year:'numeric'})+'</div><div class="sync-bar"><span class="sync-dot '+ss+'"></span>'+sl[ss]+ts+'</div></div><div id="content"></div>';
-  const c=document.getElementById('content');
-  ({capture:rCapture,week:rWeek,termine:rTermine,habits:rHabits,rules:rRules,memo:rMemo,morning:rMorning,settings:rSettings})[currentTab]?.(c);
+  var c=document.getElementById('content');
+  var fn={capture:rCapture,week:rWeek,termine:rTermine,todo:rTodo,habits:rHabits,memo:rMemo,familie:rFamilie,morning:rMorning,settings:rSettings};
+  if(fn[currentTab])fn[currentTab](c);
   document.querySelector('.bottom-nav')?.remove();
-  const n=document.createElement('div');n.className='bottom-nav';
-  n.innerHTML=[{id:'capture',i:'\ud83e\udde0',l:'Dump'},{id:'week',i:'\ud83d\udcc5',l:'Woche'},{id:'termine',i:'\ud83d\udccc',l:'Termine'},{id:'habits',i:'\u2713',l:'Habits'},{id:'memo',i:'\ud83d\udcac',l:'Memos'},{id:'morning',i:'\u2600',l:'Morgen'},{id:'rules',i:'\u26a1',l:'Regeln'},{id:'settings',i:'\u2699',l:'Sync'}].map(function(t){return'<button class="'+(currentTab===t.id?'active':'')+'" onclick="switchTab(\''+t.id+'\')"><span class="ni">'+t.i+'</span>'+t.l+'</button>'}).join('');
+  var n=document.createElement('div');n.className='bottom-nav';
+  n.innerHTML=[{id:'capture',i:'\ud83e\udde0',l:'Dump'},{id:'week',i:'\ud83d\udcc5',l:'Woche'},{id:'termine',i:'\ud83d\udccc',l:'Termine'},{id:'todo',i:'\u2611',l:'To-Do'},{id:'habits',i:'\u2713',l:'Habits'},{id:'memo',i:'\ud83d\udcac',l:'Memos'},{id:'familie',i:'\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67',l:'Familie'},{id:'morning',i:'\u2600',l:'Morgen'},{id:'settings',i:'\u2699',l:'Mehr'}].map(function(t){return'<button class="'+(currentTab===t.id?'active':'')+'" onclick="switchTab(\''+t.id+'\')"><span class="ni">'+t.i+'</span>'+t.l+'</button>'}).join('');
   document.body.appendChild(n);
 }
 
+// --- BRAIN DUMP ---
 function rCapture(el){
   var tc=captures.filter(function(c){return c.date===tS}),ol=captures.filter(function(c){return c.date!==tS}).slice(0,20);
-  el.innerHTML='<div class="card"><div class="card-title">BRAIN DUMP</div><div class="section-desc"><strong>Das Herzst\u00fcck.</strong> Alles was dir durch den Kopf geht \u2192 sofort hier rein. Gedanke \u2192 Eintippen \u2192 Kopf frei.</div><div class="capture-area"><input type="text" id="captureInput" placeholder="Gedanke, Aufgabe, Info..." onkeypress="if(event.key===\'Enter\')addCapture()"><select id="captureTag"><option value="arbeit">Arbeit</option><option value="privat">Privat</option><option value="gesundheit">Gesundh.</option><option value="idee">Idee</option></select></div><button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="addCapture()">Erfassen</button>'+(tc.length?'<div class="card-title">HEUTE</div>'+tc.map(function(c){return cHtml(c,captures.indexOf(c))}).join(''):'<div class="empty-state">Kopf leer? Gut. Oder: noch nicht erfasst.</div>')+'</div>'+(ol.length?'<div class="card"><div class="card-title">FR\u00dcHER</div>'+ol.map(function(c){return cHtml(c,captures.indexOf(c))}).join('')+'</div>':'');
-  setTimeout(function(){var i=document.getElementById('captureInput');if(i)i.focus()},100);
+  el.innerHTML='<div class="card"><div class="card-title">BRAIN DUMP</div><div class="section-desc"><strong>Das Herzst\u00fcck.</strong> Alles was dir durch den Kopf geht \u2192 sofort hier rein.</div><div class="capture-area"><input type="text" id="capIn" placeholder="Gedanke, Aufgabe, Info..." onkeypress="if(event.key===\'Enter\')addCap()"><select id="capTag"><option value="arbeit">Arbeit</option><option value="privat">Privat</option><option value="gesundheit">Gesundh.</option><option value="idee">Idee</option></select></div><button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="addCap()">Erfassen</button>'+(tc.length?'<div class="card-title">HEUTE</div>'+tc.map(function(c){return capH(c,captures.indexOf(c))}).join(''):'<div class="empty-state">Kopf leer? Gut.</div>')+'</div>'+(ol.length?'<div class="card"><div class="card-title">FR\u00dcHER</div>'+ol.map(function(c){return capH(c,captures.indexOf(c))}).join('')+'</div>':'');
+  setTimeout(function(){var i=document.getElementById('capIn');if(i)i.focus()},100);
 }
-function cHtml(c,i){return'<div class="capture-item"><span class="tag tag-'+c.tag+'">'+c.tag+'</span><span class="text">'+eH(c.text)+'</span><button class="delete-btn" onclick="deleteCapture('+i+')">×</button></div>'}
+function capH(c,i){return'<div class="task-item"><span class="tag tag-'+c.tag+'">'+c.tag+'</span><span class="task-text">'+eH(c.text)+'</span><button class="delete-btn" onclick="delCap('+i+')">×</button></div>'}
 
+// --- TO-DO ---
+function rTodo(el){
+  var open=todos.filter(function(t){return!t.done}),done=todos.filter(function(t){return t.done});
+  el.innerHTML='<div class="card"><div class="card-title">TO-DO LISTE</div><div class="section-desc"><strong>Aufgaben mit Haken.</strong> Alles was du erledigen musst. Abhaken, fertig, weiter.</div><div class="capture-area"><input type="text" id="todoIn" placeholder="Neue Aufgabe..." onkeypress="if(event.key===\'Enter\')addTodo()"></div><button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="addTodo()">Hinzuf\u00fcgen</button>'+(open.length?open.map(function(t){return todoH(t,todos.indexOf(t))}).join(''):'<div class="empty-state">Alles erledigt!</div>')+'</div>'+(done.length?'<div class="card"><div class="card-title-row"><div class="card-title">ERLEDIGT</div><button class="btn-outline" style="padding:4px 10px;font-size:0.65rem" onclick="clearDoneTodos()">Erledigte l\u00f6schen</button></div>'+done.map(function(t){return todoH(t,todos.indexOf(t))}).join('')+'</div>':'');
+}
+function todoH(t,i){return'<div class="task-item'+(t.done?' done':'')+'"><div class="task-check'+(t.done?' done':'')+'" onclick="togTodo('+i+')">'+(t.done?'\u2713':'')+'</div><span class="task-text">'+eH(t.text)+'</span><button class="delete-btn" onclick="delTodo('+i+')">×</button></div>'}
+
+// --- MEMOS (task-based) ---
+function rMemo(el){
+  el.innerHTML='<div class="card"><div class="tab-switch"><button class="'+(memoSubTab==='partner'?'active':'')+'" onclick="memoSubTab=\'partner\';render()">Freundin / Privat</button><button class="'+(memoSubTab==='work'?'active':'')+'" onclick="memoSubTab=\'work\';render()">Arbeit</button></div>'+(memoSubTab==='partner'?rMemoPartner():rMemoWork())+'</div>';
+}
+function rMemoPartner(){
+  var items=memoPartner;
+  return'<div class="card-title">WAS FREUNDIN / PRIVAT GESAGT HAT</div><div class="section-desc"><strong>Einzelne Eintr\u00e4ge f\u00fcr alles was sie sagt.</strong> Abhaken wenn erledigt, l\u00f6schen wenn nicht mehr relevant.</div><div class="capture-area"><input type="text" id="memoPin" placeholder="Was hat sie gesagt / was merken?" onkeypress="if(event.key===\'Enter\')addMemoP()"></div><button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="addMemoP()">Eintragen</button>'+(items.length?items.map(function(m,i){return memoItemH(m,i,'p')}).join(''):'<div class="empty-state">Keine offenen Eintr\u00e4ge</div>');
+}
+function rMemoWork(){
+  var items=memoWork;
+  return'<div class="card-title">ARBEIT \u2014 OFFENE PUNKTE</div><div class="section-desc"><strong>Jeder offene Punkt einzeln.</strong> Abhaken wenn erledigt, l\u00f6schen wenn nicht mehr relevant.</div><div class="capture-area"><input type="text" id="memoWin" placeholder="Offener Punkt..." onkeypress="if(event.key===\'Enter\')addMemoW()"></div><button class="btn-primary" style="width:100%;margin-bottom:14px" onclick="addMemoW()">Eintragen</button>'+(items.length?items.map(function(m,i){return memoItemH(m,i,'w')}).join(''):'<div class="empty-state">Keine offenen Punkte</div>');
+}
+function memoItemH(m,i,type){return'<div class="task-item'+(m.done?' done':'')+'"><div class="task-check'+(m.done?' done':'')+'" onclick="togMemo(\''+type+'\','+i+')">'+(m.done?'\u2713':'')+'</div><span class="task-text">'+eH(m.text)+'</span><button class="delete-btn" onclick="delMemo(\''+type+'\','+i+')">×</button></div>'}
+
+// --- FAMILIE ---
+function rFamilie(el){
+  var people=[{key:'ilvy',name:'\ud83d\udc67 Ilvy (Tochter)'},{key:'elias',name:'\ud83d\udc66 Elias (Stiefsohn)'},{key:'kerstin',name:'\u2764\ufe0f Kerstin (Freundin)'},{key:'coco',name:'\ud83d\udc36 Coco (Hund)'}];
+  el.innerHTML='<div class="card"><div class="card-title">FAMILIE \u2014 WICHTIGE INFOS</div><div class="section-desc"><strong>Gr\u00f6\u00dfen, Geschenkideen, wichtige Details.</strong> Tippe auf einen Namen zum Auf-/Zuklappen. Tippe auf einen Wert um ihn zu \u00e4ndern.</div>'+people.map(function(p){
+    var entries=familyData[p.key]||[];
+    var open=familyOpen[p.key];
+    return'<div class="family-person"><div class="family-header" onclick="togFamily(\''+p.key+'\')">'+p.name+'<span class="toggle">'+(open?'\u25b2':'\u25bc')+'</span></div><div class="family-body'+(open?'':' collapsed')+'">'+entries.map(function(e,i){return'<div class="family-entry"><span class="family-label">'+eH(e.label)+'</span><span class="family-value" id="fv_'+p.key+'_'+i+'">'+((e.value||'').length?eH(e.value):'<em style="color:var(--text-muted)">Tippen zum Eintragen</em>')+'</span><button class="delete-btn" onclick="editFamilyEntry(\''+p.key+'\','+i+')" style="font-size:0.8rem">\u270e</button></div>'}).join('')+'<div class="btn-row" style="margin-top:8px"><button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="addFamilyEntry(\''+p.key+'\')">+ Eintrag</button></div></div></div>'}).join('')+'</div>';
+}
+
+// --- WEEK ---
 function rWeek(el){
   var dord=['Mo','Di','Mi','Do','Fr','Sa','So'],d2n={Mo:1,Di:2,Mi:3,Do:4,Fr:5,Sa:6,So:0};
-  el.innerHTML='<div class="card"><div class="card-title">WOCHENPLAN</div><div class="section-desc"><strong>Dein fixer Wochenrhythmus.</strong> Tippe auf \u270e um einen Tag zu bearbeiten.</div><div class="week-grid">'+dord.map(function(d){var t=d2n[d]===cD,ev=weekEvents[d]||[];return'<div class="day-row '+(t?'today':'')+'"><div class="day-name">'+d+(t?'<small>HEUTE</small>':'')+'</div><div class="day-events">'+ev.map(function(e){return'<span class="event-chip event-'+e.type+'">'+eH(e.text)+'</span>'}).join('')+'</div><button class="day-edit-btn" onclick="openDayEdit(\''+d+'\')">✎</button></div>'}).join('')+'</div></div>';
+  el.innerHTML='<div class="card"><div class="card-title">WOCHENPLAN</div><div class="section-desc"><strong>Dein fixer Wochenrhythmus.</strong> Tippe \u270e um einen Tag zu bearbeiten.</div><div class="week-grid">'+dord.map(function(d){var t=d2n[d]===cD,ev=weekEvents[d]||[];return'<div class="day-row '+(t?'today':'')+'"><div class="day-name">'+d+(t?'<small>HEUTE</small>':'')+'</div><div class="day-events">'+ev.map(function(e){return'<span class="event-chip event-'+e.type+'">'+eH(e.text)+'</span>'}).join('')+'</div><button class="day-edit-btn" onclick="openDayEdit(\''+d+'\')">✎</button></div>'}).join('')+'</div></div>';
 }
 
+// --- TERMINE ---
 function rTermine(el){
   var s=appointments.slice().sort(function(a,b){return a.date.localeCompare(b.date)});
   var up=s.filter(function(a){return a.date>=tS}),pa=s.filter(function(a){return a.date<tS}).reverse().slice(0,5);
-  el.innerHTML='<div class="card"><div class="card-title">WICHTIGE TERMINE</div><div class="section-desc"><strong>Alles mit festem Datum.</strong> Arzttermine, Deadlines, Geburtstage \u2014 damit nichts untergeht.</div><div class="add-row" style="margin-bottom:14px"><input type="text" id="tText" placeholder="Was?" onkeypress="if(event.key===\'Enter\')addAppt()"><input type="date" id="tDate" value="'+tS+'"><button class="btn-small" onclick="addAppt()">+</button></div>'+(up.length?'<div class="card-title">KOMMEND</div>'+up.map(aHtml).join(''):'<div class="empty-state">Keine Termine</div>')+'</div>'+(pa.length?'<div class="card"><div class="card-title">VERGANGEN</div>'+pa.map(aHtml).join('')+'</div>':'');
+  el.innerHTML='<div class="card"><div class="card-title">WICHTIGE TERMINE</div><div class="section-desc"><strong>Alles mit festem Datum.</strong> Arzttermine, Deadlines, Geburtstage.</div><div class="add-row" style="margin-bottom:14px"><input type="text" id="tText" placeholder="Was?" onkeypress="if(event.key===\'Enter\')addAppt()"><input type="date" id="tDate" value="'+tS+'"><button class="btn-small" onclick="addAppt()">+</button></div>'+(up.length?'<div class="card-title">KOMMEND</div>'+up.map(apptH).join(''):'<div class="empty-state">Keine Termine</div>')+'</div>'+(pa.length?'<div class="card"><div class="card-title">VERGANGEN</div>'+pa.map(apptH).join('')+'</div>':'');
 }
-function aHtml(a){var df=dDf(a.date,tS),cl='';if(df<0)cl='appointment-past';else if(df===0)cl='appointment-today';else if(df<=3)cl='appointment-soon';var lb=df===0?'HEUTE':df===1?'MORGEN':fD(a.date);return'<div class="appointment-item '+cl+'"><span class="appointment-date">'+lb+'</span><span class="appointment-text">'+eH(a.text)+'</span><button class="delete-btn" onclick="delAppt('+appointments.indexOf(a)+')">×</button></div>'}
+function apptH(a){var df=dDf(a.date,tS),cl='';if(df<0)cl='appointment-past';else if(df===0)cl='appointment-today';else if(df<=3)cl='appointment-soon';var lb=df===0?'HEUTE':df===1?'MORGEN':fD(a.date);return'<div class="appointment-item '+cl+'"><span class="appointment-date">'+lb+'</span><span class="appointment-text">'+eH(a.text)+'</span><button class="delete-btn" onclick="delAppt('+appointments.indexOf(a)+')">×</button></div>'}
 
+// --- HABITS ---
 function rHabits(el){
   var ds=['Mo','Di','Mi','Do','Fr','Sa','So'],ti=cD===0?6:cD-1;
   var td=hL.filter(function(h){return habits[gWK(h.id,ti)]}).length,wd=Object.values(habits).filter(function(v){return v}).length;
-  el.innerHTML='<div class="card"><div class="card-title" style="display:flex;justify-content:space-between;align-items:center">HABITS<button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="openHabitEdit()">Anpassen</button></div><div class="section-desc"><strong>Sechs Gewohnheiten, mehr nicht.</strong> Nicht Perfektion \u2014 Sichtbarkeit. 4 von 7 ist ein Sieg. Tippe \u201eAnpassen\u201c um die Gewohnheiten f\u00fcr n\u00e4chste Woche zu \u00e4ndern.</div><div class="habits-grid"><div class="habits-day-headers"><span></span>'+ds.map(function(d){return'<span>'+d+'</span>'}).join('')+'</div>'+hL.map(function(h){return'<div class="habit-row"><span class="habit-name">'+h.name+'</span>'+ds.map(function(d,di){var k=gWK(h.id,di);return'<div class="habit-check '+(habits[k]?'done':'')+'" onclick="toggleHabit(\''+k+'\')">'+(habits[k]?'\u2713':'')+'</div>'}).join('')+'</div>'}).join('')+'</div><div class="streak-bar"><div class="streak-item"><div class="num">'+td+'/'+hL.length+'</div><div class="label">HEUTE</div></div><div class="streak-item"><div class="num">'+wd+'</div><div class="label">WOCHE</div></div><div class="streak-item"><div class="num">'+Math.round(wd/(hL.length*7)*100)+'%</div><div class="label">QUOTE</div></div></div></div>';
+  el.innerHTML='<div class="card"><div class="card-title-row"><div class="card-title">HABITS</div><button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="openHabitEdit()">Anpassen</button></div><div class="section-desc"><strong>Sechs Gewohnheiten.</strong> Nicht Perfektion \u2014 Sichtbarkeit.</div><div class="habits-grid"><div class="habits-day-headers"><span></span>'+ds.map(function(d){return'<span>'+d+'</span>'}).join('')+'</div>'+hL.map(function(h){return'<div class="habit-row"><span class="habit-name">'+h.name+'</span>'+ds.map(function(d,di){var k=gWK(h.id,di);return'<div class="habit-check '+(habits[k]?'done':'')+'" onclick="toggleHabit(\''+k+'\')">'+(habits[k]?'\u2713':'')+'</div>'}).join('')+'</div>'}).join('')+'</div><div class="streak-bar"><div class="streak-item"><div class="num">'+td+'/'+hL.length+'</div><div class="label">HEUTE</div></div><div class="streak-item"><div class="num">'+wd+'</div><div class="label">WOCHE</div></div><div class="streak-item"><div class="num">'+Math.round(wd/(hL.length*7)*100)+'%</div><div class="label">QUOTE</div></div></div></div>';
 }
 
-function openHabitEdit(){
-  document.getElementById('modal-root').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeHabitEdit()"><div class="modal-sheet"><div class="modal-header"><h3>Habits anpassen</h3><button class="modal-close" onclick="closeHabitEdit()">\u00d7</button></div><div class="section-desc" style="margin-bottom:16px"><strong>6 Gewohnheiten \u2014 nicht mehr, nicht weniger.</strong> \u00c4ndere die Namen, die Anzahl bleibt fix.</div><div id="hEditList">'+hL.map(function(h,i){return'<div class="modal-event-row"><span style="color:var(--text-muted);font-size:0.75rem;min-width:20px">'+(i+1)+'.</span><input type="text" value="'+eH(h.name)+'" onchange="updHabit('+i+',this.value)" placeholder="Gewohnheit '+(i+1)+'"></div>'}).join('')+'</div><div class="btn-row"><button class="btn-primary" onclick="closeHabitEdit()">Fertig</button></div></div></div>';
-}
-function updHabit(i,v){hL[i].name=v;schS()}
-function closeHabitEdit(){document.getElementById('modal-root').innerHTML='';render()}
-
-function rRules(el){
-  el.innerHTML='<div class="card"><div class="card-title">GEHIRN-REGELN</div><div class="section-desc"><strong>Das Warum hinter dem System.</strong> Lies einmal durch. Komm zur\u00fcck wenn alte Muster auftauchen.</div><div class="focus-quote">\u201eDu bist nicht vergesslich. Du bist \u00fcberlastet.\u201c</div><div class="rules-list">'+bR.map(function(r){return'<div class="rule"><strong>'+r.title+':</strong> '+r.text+'<span class="why">Warum: '+r.why+'</span></div>'}).join('')+'</div></div>';
-}
-
-function rMemo(el){
-  var pContent=memos.partner||'',wContent=memos.work||'';
-  el.innerHTML='<div class="card"><div class="memo-header"><div class="card-title" style="margin-bottom:0">WAS FREUNDIN GESAGT HAT</div>'+(editingMemo==='partner'?'':'<button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="startEditMemo(\'partner\')">Bearbeiten</button>')+'</div><div class="section-desc"><strong>Sofort hier rein wenn sie dir was sagt.</strong> \u201eMoment, ich schreib mir das auf weil es mir wichtig ist.\u201c</div>'+(editingMemo==='partner'?'<div class="memo-area"><textarea id="pMemo" placeholder="Termine, W\u00fcnsche, Infos...">'+eH(pContent)+'</textarea><div class="btn-row"><button class="memo-save" onclick="saveMemo(\'partner\')">Speichern</button><button class="btn-outline" onclick="cancelEditMemo()">Abbrechen</button></div></div>':'<div class="memo-display'+(pContent?'':' empty')+'">'+(pContent?eH(pContent):'Noch keine Notizen. Tippe \u201eBearbeiten\u201c um etwas einzutragen.')+'</div>')+'</div><div class="card"><div class="memo-header"><div class="card-title" style="margin-bottom:0">ARBEIT \u2014 OFFENE PUNKTE</div>'+(editingMemo==='work'?'':'<button class="btn-outline" style="padding:4px 10px;font-size:0.68rem" onclick="startEditMemo(\'work\')">Bearbeiten</button>')+'</div><div class="section-desc"><strong>Dein Arbeitspuffer.</strong> Alles was im Kopf kreist \u2192 hier abladen.</div>'+(editingMemo==='work'?'<div class="memo-area"><textarea id="wMemo" placeholder="Offene Mails, Prozesse...">'+eH(wContent)+'</textarea><div class="btn-row"><button class="memo-save" onclick="saveMemo(\'work\')">Speichern</button><button class="btn-outline" onclick="cancelEditMemo()">Abbrechen</button></div></div>':'<div class="memo-display'+(wContent?'':' empty')+'">'+(wContent?eH(wContent):'Noch keine Notizen. Tippe \u201eBearbeiten\u201c um etwas einzutragen.')+'</div>')+'</div>';
-}
-function startEditMemo(t){editingMemo=t;render();setTimeout(function(){var el=document.getElementById(t==='partner'?'pMemo':'wMemo');if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}},100)}
-function cancelEditMemo(){editingMemo=null;render()}
-
+// --- MORNING ---
 function rMorning(el){
-  el.innerHTML='<div class="card"><div class="card-title">MORGEN-CHECK</div><div class="section-desc"><strong>5 Minuten vor dem Losfahren.</strong> Setzt sich t\u00e4glich automatisch zur\u00fcck.</div><div class="checklist">'+mI.map(function(it,i){return'<div class="check-item '+(morningChecks[i]?'checked':'')+'" onclick="toggleMorning('+i+')"><div class="checkbox">'+(morningChecks[i]?'\u2713':'')+'</div>'+it+'</div>'}).join('')+'</div></div><div class="card"><div class="card-title">BILDSCHIRMZEIT</div><div class="section-desc"><strong>Doomscroll-Tracker.</strong> Ziel: unter 30 Min.</div><div class="phone-section"><div class="phone-counter '+(phoneMinutes.today>30?(phoneMinutes.today>60?'danger':'warning'):'')+'">'+phoneMinutes.today+' min</div><div class="phone-label">News / Sinnlos-Scroll</div><div class="phone-buttons"><button onclick="addPhoneTime(5)">+5</button><button onclick="addPhoneTime(10)">+10</button><button onclick="addPhoneTime(15)">+15</button><button onclick="resetPhone()">Reset</button></div></div></div>';
+  el.innerHTML='<div class="card"><div class="card-title">MORGEN-CHECK</div><div class="section-desc"><strong>5 Minuten vor dem Losfahren.</strong> Setzt sich t\u00e4glich zur\u00fcck.</div><div class="checklist">'+mI.map(function(it,i){return'<div class="check-item '+(morningChecks[i]?'checked':'')+'" onclick="togMorn('+i+')"><div class="checkbox">'+(morningChecks[i]?'\u2713':'')+'</div>'+it+'</div>'}).join('')+'</div></div><div class="card"><div class="card-title">BILDSCHIRMZEIT</div><div class="section-desc"><strong>Doomscroll-Tracker.</strong> Ziel: unter 30 Min.</div><div class="phone-section"><div class="phone-counter '+(phoneMinutes.today>30?(phoneMinutes.today>60?'danger':'warning'):'')+'">'+phoneMinutes.today+' min</div><div class="phone-label">News / Sinnlos-Scroll</div><div class="phone-buttons"><button onclick="addPT(5)">+5</button><button onclick="addPT(10)">+10</button><button onclick="addPT(15)">+15</button><button onclick="resetPT()">Reset</button></div></div></div>';
 }
 
+// --- SETTINGS + REGELN ---
 function rSettings(el){
   var cfg=gC();
-  el.innerHTML='<div class="card"><div class="card-title">SYNC</div><div class="section-desc"><strong>Cloud-Sync f\u00fcr alle Ger\u00e4te.</strong></div><div class="settings-field"><label>JSONBin Bin-ID</label><input type="text" id="binId" value="'+eH(cfg.binId||'')+'" placeholder="65a1b2c3..."><div class="hint">jsonbin.io \u2192 Bin \u2192 ID aus URL</div></div><div class="settings-field"><label>API-Key</label><input type="password" id="apiKey" value="'+eH(cfg.apiKey||'')+'" placeholder="$2a$10$..."><div class="hint">jsonbin.io \u2192 API Keys</div></div><div class="btn-row"><button class="btn-primary" onclick="saveSettings()">Verbinden</button><button class="btn-primary" style="background:var(--orange)" onclick="testSync()">Testen</button><button class="btn-primary" style="background:var(--purple)" onclick="forceUpload()">Hochladen</button></div><div id="sStatus"></div></div>';
+  el.innerHTML='<div class="card"><div class="card-title">GEHIRN-REGELN</div><div class="focus-quote">\u201eDu bist nicht vergesslich. Du bist \u00fcberlastet.\u201c</div><div class="rules-list">'+bR.map(function(r){return'<div class="rule"><strong>'+r.title+':</strong> '+r.text+'<span class="why">'+r.why+'</span></div>'}).join('')+'</div></div><div class="card"><div class="card-title">SYNC</div><div class="section-desc"><strong>Cloud-Sync f\u00fcr alle Ger\u00e4te.</strong></div><div class="settings-field"><label>JSONBin Bin-ID</label><input type="text" id="binId" value="'+eH(cfg.binId||'')+'" placeholder="65a1b2c3..."><div class="hint">jsonbin.io \u2192 Bin \u2192 ID aus URL</div></div><div class="settings-field"><label>API-Key</label><input type="password" id="apiKey" value="'+eH(cfg.apiKey||'')+'" placeholder="$2a$10$..."><div class="hint">jsonbin.io \u2192 API Keys</div></div><div class="btn-row"><button class="btn-primary" onclick="saveSett()">Verbinden</button><button class="btn-primary" style="background:var(--orange)" onclick="testSync()">Testen</button><button class="btn-primary" style="background:var(--purple)" onclick="forceUp()">Hochladen</button></div><div id="sStatus"></div></div>';
 }
 
-function openDayEdit(d){editingDay=d;rModal()}
+// === MODALS ===
+function openDayEdit(d){editingDay=d;rDayModal()}
 function closeModal(){editingDay=null;document.getElementById('modal-root').innerHTML='';render()}
-function rModal(){
-  if(!editingDay)return;var ev=weekEvents[editingDay]||[];
-  var tl={work:'Arbeit',family:'Familie',sport:'Sport',free:'Frei'};
-  document.getElementById('modal-root').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet"><div class="modal-header"><h3>'+editingDay+' bearbeiten</h3><button class="modal-close" onclick="closeModal()">×</button></div><div id="mEv">'+ev.map(function(e,i){return'<div class="modal-event-row"><input type="text" value="'+eH(e.text)+'" onchange="updEv('+i+',\'text\',this.value)"><select onchange="updEv('+i+',\'type\',this.value)">'+['work','family','sport','free'].map(function(t){return'<option value="'+t+'" '+(e.type===t?'selected':'')+'>'+tl[t]+'</option>'}).join('')+'</select><button class="delete-btn" onclick="rmEv('+i+')">×</button></div>'}).join('')+'</div><div class="btn-row"><button class="btn-small" onclick="addEv()">+ Eintrag</button><button class="btn-outline" onclick="closeModal()">Fertig</button></div></div></div>';
+function rDayModal(){
+  if(!editingDay)return;var ev=weekEvents[editingDay]||[];var tl={work:'Arbeit',family:'Familie',sport:'Sport',free:'Frei'};
+  document.getElementById('modal-root').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet"><div class="modal-header"><h3>'+editingDay+' bearbeiten</h3><button class="modal-close" onclick="closeModal()">\u00d7</button></div>'+ev.map(function(e,i){return'<div class="modal-event-row"><input type="text" value="'+eH(e.text)+'" onchange="updEv('+i+',\'text\',this.value)"><select onchange="updEv('+i+',\'type\',this.value)">'+['work','family','sport','free'].map(function(t){return'<option value="'+t+'" '+(e.type===t?'selected':'')+'>'+tl[t]+'</option>'}).join('')+'</select><button class="delete-btn" onclick="rmEv('+i+')">×</button></div>'}).join('')+'<div class="btn-row"><button class="btn-small" onclick="addEv()">+ Eintrag</button><button class="btn-outline" onclick="closeModal()">Fertig</button></div></div></div>';
 }
 function updEv(i,f,v){weekEvents[editingDay][i][f]=v;schS()}
-function rmEv(i){weekEvents[editingDay].splice(i,1);schS();rModal()}
-function addEv(){if(!weekEvents[editingDay])weekEvents[editingDay]=[];weekEvents[editingDay].push({text:'',type:'work'});schS();rModal()}
+function rmEv(i){weekEvents[editingDay].splice(i,1);schS();rDayModal()}
+function addEv(){if(!weekEvents[editingDay])weekEvents[editingDay]=[];weekEvents[editingDay].push({text:'',type:'work'});schS();rDayModal()}
 
+function openHabitEdit(){
+  document.getElementById('modal-root').innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet"><div class="modal-header"><h3>Habits anpassen</h3><button class="modal-close" onclick="closeModal()">\u00d7</button></div><div class="section-desc"><strong>6 Gewohnheiten \u2014 Namen \u00e4ndern, Anzahl bleibt fix.</strong></div>'+hL.map(function(h,i){return'<div class="modal-event-row"><span style="color:var(--text-muted);font-size:0.75rem;min-width:20px">'+(i+1)+'.</span><input type="text" value="'+eH(h.name)+'" onchange="hL['+i+'].name=this.value;schS()"></div>'}).join('')+'<div class="btn-row"><button class="btn-primary" onclick="closeModal()">Fertig</button></div></div></div>';
+}
+
+function editFamilyEntry(person,idx){
+  var entry=familyData[person][idx];
+  var newVal=prompt(entry.label+':',entry.value||'');
+  if(newVal!==null){familyData[person][idx].value=newVal;schS();render()}
+}
+function addFamilyEntry(person){
+  var label=prompt('Bezeichnung (z.B. Lieblingsspielzeug, Allergie):');
+  if(label&&label.trim()){familyData[person].push({label:label.trim(),value:''});schS();render()}
+}
+function togFamily(key){familyOpen[key]=!familyOpen[key];render()}
+
+// === ACTIONS ===
 function switchTab(t){currentTab=t;render()}
-function addCapture(){var i=document.getElementById('captureInput'),t=document.getElementById('captureTag');if(!i.value.trim())return;captures.unshift({text:i.value.trim(),tag:t.value,date:tS,time:new Date().toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'})});schS();render()}
-function deleteCapture(i){captures.splice(i,1);schS();render()}
+function addCap(){var i=document.getElementById('capIn'),t=document.getElementById('capTag');if(!i.value.trim())return;captures.unshift({text:i.value.trim(),tag:t.value,date:tS,time:new Date().toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'})});schS();render()}
+function delCap(i){captures.splice(i,1);schS();render()}
+function addTodo(){var i=document.getElementById('todoIn');if(!i.value.trim())return;todos.unshift({text:i.value.trim(),done:false,date:tS});schS();render()}
+function togTodo(i){todos[i].done=!todos[i].done;schS();render()}
+function delTodo(i){todos.splice(i,1);schS();render()}
+function clearDoneTodos(){todos=todos.filter(function(t){return!t.done});schS();render()}
+function addMemoP(){var i=document.getElementById('memoPin');if(!i.value.trim())return;memoPartner.unshift({text:i.value.trim(),done:false,date:tS});schS();render()}
+function addMemoW(){var i=document.getElementById('memoWin');if(!i.value.trim())return;memoWork.unshift({text:i.value.trim(),done:false,date:tS});schS();render()}
+function togMemo(type,i){if(type==='p')memoPartner[i].done=!memoPartner[i].done;else memoWork[i].done=!memoWork[i].done;schS();render()}
+function delMemo(type,i){if(type==='p')memoPartner.splice(i,1);else memoWork.splice(i,1);schS();render()}
 function addAppt(){var t=document.getElementById('tText'),d=document.getElementById('tDate');if(!t.value.trim())return;appointments.push({text:t.value.trim(),date:d.value});schS();render()}
 function delAppt(i){appointments.splice(i,1);schS();render()}
 function toggleHabit(k){habits[k]=!habits[k];schS();render()}
-function toggleMorning(i){morningChecks[i]=!morningChecks[i];schS();render()}
-function saveMemo(t){var el=document.getElementById(t==='partner'?'pMemo':'wMemo');memos[t]=el.value;schS();editingMemo=null;render()}
-function addPhoneTime(m){phoneMinutes.today+=m;phoneMinutes.date=tS;schS();render()}
-function resetPhone(){phoneMinutes.today=0;schS();render()}
-function saveSettings(){sC({binId:document.getElementById('binId').value.trim(),apiKey:document.getElementById('apiKey').value.trim()});var s=document.getElementById('sStatus');s.className='settings-status ok';s.textContent='\u2713 Gespeichert. Jetzt "Testen" klicken.'}
-async function testSync(){var s=document.getElementById('sStatus');s.className='settings-status';s.style.background='var(--accent-light)';s.style.color='var(--accent)';s.textContent='Verbinde...';var d=await cL();if(ss==='ok'){s.className='settings-status ok';s.textContent='\u2713 Verbindung OK!';if(d&&d.captures&&d.captures.length>0){aD(d);s.textContent+=' '+d.captures.length+' Captures geladen.'}}else{s.className='settings-status err';s.textContent='\u2717 Fehlgeschlagen.'}currentTab='settings';render()}
-async function forceUpload(){var s=document.getElementById('sStatus');s.className='settings-status';s.style.background='var(--accent-light)';s.style.color='var(--accent)';s.textContent='Lade hoch...';await cS();if(ss==='ok'){s.className='settings-status ok';s.textContent='\u2713 Hochgeladen!'}else{s.className='settings-status err';s.textContent='\u2717 Fehlgeschlagen.'}}
+function togMorn(i){morningChecks[i]=!morningChecks[i];schS();render()}
+function addPT(m){phoneMinutes.today+=m;phoneMinutes.date=tS;schS();render()}
+function resetPT(){phoneMinutes.today=0;schS();render()}
+function saveSett(){sC({binId:document.getElementById('binId').value.trim(),apiKey:document.getElementById('apiKey').value.trim()});var s=document.getElementById('sStatus');s.className='settings-status ok';s.textContent='\u2713 Gespeichert. Jetzt "Testen" klicken.'}
+async function testSync(){var s=document.getElementById('sStatus');s.className='settings-status';s.style.background='var(--accent-light)';s.style.color='var(--accent)';s.textContent='Verbinde...';var d=await cLoad();if(ss==='ok'){s.className='settings-status ok';s.textContent='\u2713 Verbindung OK!';if(d&&d.captures){aD(d)}}else{s.className='settings-status err';s.textContent='\u2717 Fehlgeschlagen.'}currentTab='settings';render()}
+async function forceUp(){var s=document.getElementById('sStatus');s.className='settings-status';s.style.background='var(--accent-light)';s.style.color='var(--accent)';s.textContent='Lade hoch...';await cSave();if(ss==='ok'){s.className='settings-status ok';s.textContent='\u2713 Hochgeladen!'}else{s.className='settings-status err';s.textContent='\u2717 Fehlgeschlagen.'}}
 
+// === INIT ===
 render();
-(async function(){var c=gC();if(c.binId&&c.apiKey){var d=await cL();if(d&&d.captures){aD(d);render()}}})();
+(async function(){var c=gC();if(c.binId&&c.apiKey){var d=await cLoad();if(d&&d.captures){aD(d);render()}}})();
 </script>
 </body>
 </html>
