@@ -211,10 +211,12 @@ var kassensturz=lL('kassensturz',{
   fix:{miete:0,strom:0,internet:0,versicherungen:0,handy:0,streaming:0,auto:0,kredit:0},
   variabel:{lebensmittel:0,freizeit:0,sport:0,kleidung:0,restaurant:0,sonstiges:0},
   sparen:{sparplan:0,invest:0},
-  portfolio:{uniGlobal:0,uniHighTech:0,uniBlockchain:0,alphabet:0,nvidia:0,sonstiges:0},
+  portfolio:[],
   vermoegen:{girokonto:0,sparkonto:0,notgroschen:0},
   schulden:{konsumkredit:0,sonstiges:0}
 });
+// Migrate old fixed-object portfolio to dynamic array
+if(kassensturz.portfolio&&!Array.isArray(kassensturz.portfolio)){var _op=kassensturz.portfolio,_np=[];var _mn={uniGlobal:'UniGlobal',uniHighTech:'UniSector HighTech',uniBlockchain:'UniThemen Blockchain',alphabet:'Alphabet',nvidia:'NVIDIA',sonstiges:'Sonstiges'};var _mc={uniGlobal:'breit',uniHighTech:'tech',uniBlockchain:'crypto',alphabet:'tech',nvidia:'tech',sonstiges:'sonstig'};for(var _k in _op){if(_op[_k]>0)_np.push({name:_mn[_k]||_k,value:_op[_k],cat:_mc[_k]||'sonstig'})}kassensturz.portfolio=_np;sL('kassensturz',kassensturz)}
 
 var currentTab='capture',editingDay=null,memoSubTab='partner',familyOpen={ilvy:true,elias:false,kerstin:false,coco:false};
 var kassenTab='uebersicht',kassenOpen={income:true,fix:true,variabel:true,sparen:true,portfolio:true,vermoegen:true,schulden:true};
@@ -330,10 +332,13 @@ var kd=kassensturz;
 var tI=oSum(kd.income),tF=oSum(kd.fix),tV=oSum(kd.variabel),tSp=oSum(kd.sparen);
 var tA=tF+tV,frei=tI-tA-tSp;
 var sq=tI>0?(tSp/tI)*100:0;
-var tP=oSum(kd.portfolio),tVm=oSum(kd.vermoegen),tD=oSum(kd.schulden);
+var pArr=kd.portfolio||[];
+var tP=0;pArr.forEach(function(p){tP+=p.value||0});
+var tVm=oSum(kd.vermoegen),tD=oSum(kd.schulden);
 var nw=tP+tVm-tD;
 var ngM=tA>0?kd.vermoegen.notgroschen/tA:0;
-var tech=tP>0?((kd.portfolio.uniHighTech+kd.portfolio.uniBlockchain+kd.portfolio.alphabet+kd.portfolio.nvidia)/tP)*100:0;
+var techV=0;pArr.forEach(function(p){if(p.cat==='tech')techV+=p.value||0});
+var tech=tP>0?(techV/tP)*100:0;
 var allZero=tI===0&&tF===0&&tV===0;
 
 el.innerHTML='<div class="card"><div class="tab-switch"><button class="'+(kassenTab==='uebersicht'?'active':'')+'" onclick="kassenTab=\'uebersicht\';render()">\u00dcbersicht</button><button class="'+(kassenTab==='eingaben'?'active':'')+'" onclick="kassenTab=\'eingaben\';render()">Eingaben</button><button class="'+(kassenTab==='portfolio'?'active':'')+'" onclick="kassenTab=\'portfolio\';render()">Portfolio</button></div>'
@@ -392,7 +397,7 @@ var sections=[
 {key:'income',title:'\u2197 Einnahmen',col:'var(--green)',sum:tI},
 {key:'fix',title:'\ud83d\udd12 Fixkosten',col:'var(--red)',sum:tF},
 {key:'variabel',title:'\u2195 Variable Kosten',col:'var(--orange)',sum:tV},
-{key:'sparen',title:'\ud83d\udcc8 Sparen & Investieren',col:'var(--accent)',sum:tSp},
+{key:'sparen',title:'\ud83d\udcc8 Sparen & Investieren (monatl.)',col:'var(--accent)',sum:tSp},
 {key:'vermoegen',title:'\ud83c\udfe6 Verm\u00f6gen (liquide)',col:'var(--green)',sum:tVm},
 {key:'schulden',title:'\ud83d\udcc9 Schulden',col:'var(--red)',sum:tD}
 ];
@@ -410,24 +415,45 @@ return h;
 }
 
 function rKPortfolio(kd,tP,tVm,tD,nw,tech){
-var h='<div class="card-title">PORTFOLIO</div>';
-if(tP===0)return h+'<div class="section-desc"><strong>Noch keine Portfolio-Daten.</strong> Trag deine Positionen unter \u201eEingaben\u201c ein.</div><div class="empty-state">Keine Daten</div>';
+var pArr=kd.portfolio||[];
+var catNames={tech:'Tech',breit:'Breit/Index',crypto:'Crypto',anleihen:'Anleihen',sonstig:'Sonstig'};
+var h='<div class="card-title">PORTFOLIO</div><div class="section-desc"><strong>Deine Positionen.</strong> F\u00fcge Aktien, Fonds, ETFs und Crypto hinzu. Kategorie bestimmt die Risikoanalyse.</div>';
+// Add form
+h+='<div style="margin-bottom:14px"><div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap"><input type="text" id="pName" placeholder="Name (z.B. NVIDIA)" style="flex:2;min-width:100px;font-size:14px;padding:8px 10px"><input type="number" id="pVal" placeholder="Wert \u20ac" style="flex:1;min-width:80px;text-align:right;font-size:14px;padding:8px 10px"></div><div style="display:flex;gap:6px"><select id="pCat" style="flex:1;font-size:13px;padding:8px 10px"><option value="tech">Tech</option><option value="breit">Breit/Index</option><option value="crypto">Crypto</option><option value="anleihen">Anleihen</option><option value="sonstig">Sonstig</option></select><button class="btn-small" onclick="addPortPos()">+ Hinzuf\u00fcgen</button></div></div>';
+if(pArr.length===0)return h+'<div class="empty-state">Noch keine Positionen. F\u00fcge oben deine erste hinzu.</div>';
 // KPIs
-h+='<div class="kpi-grid"><div class="kpi-box"><div class="kpi-label">Portfolio</div><div class="kpi-value" style="color:var(--accent)">'+fE(tP)+'</div></div>';
-h+='<div class="kpi-box"><div class="kpi-label">Tech-Anteil</div><div class="kpi-value" style="color:'+(tech>60?'var(--red)':'var(--orange)')+'">'+tech.toFixed(0)+'%</div><div class="kpi-sub">'+(tech>50?'Klumpenrisiko':'OK')+'</div></div></div>';
+h+='<div class="kpi-grid"><div class="kpi-box"><div class="kpi-label">Portfolio</div><div class="kpi-value" style="color:var(--accent)">'+fE(tP)+'</div><div class="kpi-sub">'+pArr.length+' Positionen</div></div>';
+h+='<div class="kpi-box"><div class="kpi-label">Tech-Anteil</div><div class="kpi-value" style="color:'+(tech>60?'var(--red)':tech>40?'var(--orange)':'var(--green)')+'">'+tech.toFixed(0)+'%</div><div class="kpi-sub">'+(tech>60?'Klumpenrisiko':tech>40?'Pr\u00fcfen':'OK')+'</div></div></div>';
 // Pie
-var pItems=[];
-for(var k in kd.portfolio)if(kd.portfolio[k]>0)pItems.push({n:kLbl[k]||k,v:kd.portfolio[k]});
-pItems.sort(function(a,b){return b.v-a.v});
+var pItems=pArr.filter(function(p){return p.value>0}).slice().sort(function(a,b){return b.value-a.value});
+if(pItems.length>0){
 var grad='',pct=0;
-pItems.forEach(function(it,i){var p=(it.v/tP)*100;it.col=kColors[i%kColors.length];grad+=it.col+' '+pct.toFixed(1)+'% '+(pct+p).toFixed(1)+'%';if(i<pItems.length-1)grad+=',';pct+=p});
+pItems.forEach(function(it,i){var p=(it.value/tP)*100;it.col=kColors[i%kColors.length];grad+=it.col+' '+pct.toFixed(1)+'% '+(pct+p).toFixed(1)+'%';if(i<pItems.length-1)grad+=',';pct+=p});
 h+='<div class="kpie-wrap"><div class="kpie" style="background:conic-gradient('+grad+')"><div class="kpie-hole">'+fE(tP)+'</div></div><div class="kpie-legend">';
-pItems.forEach(function(it){h+='<div class="kpie-leg-item"><div class="kpie-dot" style="background:'+it.col+'"></div><span style="color:var(--text-dim)">'+it.n+'</span><span class="kpie-leg-val">'+fE(it.v)+' <span style="color:var(--text-muted);font-size:0.6rem">'+Math.round(it.v/tP*100)+'%</span></span></div>'});
+pItems.forEach(function(it){h+='<div class="kpie-leg-item"><div class="kpie-dot" style="background:'+it.col+'"></div><span style="color:var(--text-dim)">'+it.name+'</span><span class="kpie-leg-val">'+fE(it.value)+' <span style="color:var(--text-muted);font-size:0.6rem">'+Math.round(it.value/tP*100)+'%</span></span></div>'});
 h+='</div></div>';
+}
+// Positions list (editable)
+h+='<div class="card-title" style="margin-top:8px">POSITIONEN</div>';
+pArr.forEach(function(p,i){
+var catLabel=catNames[p.cat]||p.cat;
+var catCol=p.cat==='tech'?'var(--accent)':p.cat==='crypto'?'var(--purple)':p.cat==='breit'?'var(--green)':p.cat==='anleihen'?'var(--orange)':'var(--text-muted)';
+h+='<div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px;border-left:3px solid '+catCol+'">';
+h+='<div style="flex:1"><div style="font-size:0.85rem;font-weight:600">'+eH(p.name)+'</div><div style="font-size:0.65rem;color:var(--text-muted)">'+catLabel+'</div></div>';
+h+='<div style="font-family:\'DM Mono\',monospace;font-size:0.88rem;font-weight:700;color:var(--text)">'+fE(p.value)+'</div>';
+h+='<button class="delete-btn" onclick="editPortPos('+i+')" style="font-size:0.8rem">\u270e</button>';
+h+='<button class="delete-btn" onclick="delPortPos('+i+')">×</button>';
+h+='</div>';
+});
+// Category breakdown
+h+='<div style="padding:8px 12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:0.75rem;color:var(--text-dim);margin-top:8px;margin-bottom:14px">';
+var cats={};pArr.forEach(function(p){if(!cats[p.cat])cats[p.cat]=0;cats[p.cat]+=p.value||0});
+var catParts=[];for(var ck in cats){if(cats[ck]>0)catParts.push('<strong style="color:'+(ck==='tech'?'var(--accent)':ck==='crypto'?'var(--purple)':ck==='breit'?'var(--green)':'var(--text-dim)')+'">'+( catNames[ck]||ck)+':</strong> '+fE(cats[ck])+' ('+Math.round(cats[ck]/tP*100)+'%)')}
+h+=catParts.join(' \u00b7 ')+'</div>';
 // Risk bars
-h+='<div class="card-title" style="margin-top:8px">RISIKO-CHECK</div>';
+h+='<div class="card-title">RISIKO-CHECK</div>';
 h+='<div class="k-risk"><div class="k-risk-head"><span style="color:var(--text-dim)">Tech-Konzentration</span><span style="color:var(--text);font-family:\'DM Mono\',monospace">'+tech.toFixed(0)+'%</span></div><div class="k-risk-track"><div class="k-risk-fill" style="width:'+Math.min(tech,100)+'%;background:'+(tech>60?'var(--red)':tech>40?'var(--orange)':'var(--green)')+'"></div></div></div>';
-h+='<div class="k-risk"><div class="k-risk-head"><span style="color:var(--text-dim)">Positionen</span><span style="color:var(--text);font-family:\'DM Mono\',monospace">'+pItems.length+'</span></div><div class="k-risk-track"><div class="k-risk-fill" style="width:'+Math.min(pItems.length*12,100)+'%;background:'+(pItems.length>=8?'var(--green)':pItems.length>=5?'var(--orange)':'var(--red)')+'"></div></div></div>';
+h+='<div class="k-risk"><div class="k-risk-head"><span style="color:var(--text-dim)">Positionen</span><span style="color:var(--text);font-family:\'DM Mono\',monospace">'+pArr.length+'</span></div><div class="k-risk-track"><div class="k-risk-fill" style="width:'+Math.min(pArr.length*12,100)+'%;background:'+(pArr.length>=8?'var(--green)':pArr.length>=5?'var(--orange)':'var(--red)')+'"></div></div></div>';
 h+='<div style="padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-dim);margin-top:8px;margin-bottom:14px"><strong style="color:var(--accent)">Empfehlung:</strong> Breiteren Index-ETF (MSCI World) als Kern-Baustein erw\u00e4gen.</div>';
 // Net Worth breakdown
 h+='<div class="card-title">GESAMTVERM\u00d6GEN</div>';
@@ -436,6 +462,10 @@ var nwMax=Math.max(tVm,tP,tD,Math.abs(nw),1);
 h+='<div class="kbar"><div class="kbar-head"><span class="kbar-name">'+it.n+'</span><span class="kbar-val" style="color:'+it.c+'">'+fE(it.v)+'</span></div><div class="kbar-track"><div class="kbar-fill" style="width:'+Math.round(Math.abs(it.v)/nwMax*100)+'%;background:'+it.c+'"></div></div></div>'});
 return h;
 }
+
+function addPortPos(){var n=document.getElementById('pName'),v=document.getElementById('pVal'),c=document.getElementById('pCat');if(!n.value.trim())return;kassensturz.portfolio.push({name:n.value.trim(),value:Number(v.value)||0,cat:c.value});schS();render()}
+function delPortPos(i){kassensturz.portfolio.splice(i,1);schS();render()}
+function editPortPos(i){var p=kassensturz.portfolio[i];var nn=prompt('Name:',p.name);if(nn===null)return;var nv=prompt('Wert (\u20ac):',p.value);if(nv===null)return;p.name=nn.trim()||p.name;p.value=Number(nv)||0;var nc=prompt('Kategorie (tech/breit/crypto/anleihen/sonstig):',p.cat);if(nc!==null&&['tech','breit','crypto','anleihen','sonstig'].indexOf(nc)>=0)p.cat=nc;schS();render()}
 
 function updK(sec,key,val){kassensturz[sec][key]=Number(val)||0;schS()}
 
