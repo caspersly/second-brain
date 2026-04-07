@@ -185,7 +185,7 @@ var ss='offline',lst=null,st=null;
 function lL(k,f){try{var d=localStorage.getItem('sb_'+k);return d?JSON.parse(d):f}catch(e){return f}}
 function sL(k,d){try{localStorage.setItem('sb_'+k,JSON.stringify(d))}catch(e){}}
 function gAD(){return{captures:captures,habits:habits,morningChecks:morningChecks,morningDate:lL('morning_date',''),phoneMinutes:phoneMinutes,weekEvents:weekEvents,appointments:appointments,habitNames:hL,todos:todos,memoPartner:memoPartner,memoWork:memoWork,familyData:familyData,kassensturz:kassensturz}}
-function aD(d){if(!d)return;captures=d.captures||[];habits=d.habits||{};morningChecks=d.morningChecks||{};if(d.morningDate)sL('morning_date',d.morningDate);phoneMinutes=d.phoneMinutes||{today:0,date:''};if(d.weekEvents)weekEvents=d.weekEvents;if(d.appointments)appointments=d.appointments;if(d.habitNames)hL=d.habitNames;if(d.todos)todos=d.todos;if(d.memoPartner)memoPartner=d.memoPartner;if(d.memoWork)memoWork=d.memoWork;if(d.familyData)familyData=d.familyData;if(d.kassensturz)kassensturz=d.kassensturz;saveAll()}
+function aD(d){if(!d)return;captures=d.captures||[];habits=d.habits||{};morningChecks=d.morningChecks||{};if(d.morningDate)sL('morning_date',d.morningDate);phoneMinutes=d.phoneMinutes||{today:0,date:''};if(d.weekEvents)weekEvents=d.weekEvents;if(d.appointments)appointments=d.appointments;if(d.habitNames)hL=d.habitNames;if(d.todos)todos=d.todos;if(d.memoPartner)memoPartner=d.memoPartner;if(d.memoWork)memoWork=d.memoWork;if(d.familyData)familyData=d.familyData;if(d.kassensturz)kassensturz=migrateKassen(d.kassensturz);saveAll()}
 function saveAll(){sL('captures',captures);sL('habits',habits);sL('morning',morningChecks);sL('phone',phoneMinutes);sL('weekEvents',weekEvents);sL('appointments',appointments);sL('habitNames',hL);sL('todos',todos);sL('memoPartner',memoPartner);sL('memoWork',memoWork);sL('familyData',familyData);sL('kassensturz',kassensturz)}
 async function cLoad(){var c=gC();if(!c.binId||!c.apiKey){ss='offline';return null}ss='syncing';render();try{var r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId+'/latest',{headers:{'X-Master-Key':c.apiKey}});if(!r.ok)throw new Error(r.status);var j=await r.json();ss='ok';lst=new Date();return j.record||null}catch(e){ss='error';return null}}
 async function cSave(){var c=gC();if(!c.binId||!c.apiKey){ss='offline';return}ss='syncing';render();try{var r=await fetch('https://api.jsonbin.io/v3/b/'+c.binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':c.apiKey},body:JSON.stringify(gAD())});if(!r.ok)throw new Error(r.status);ss='ok';lst=new Date()}catch(e){ss='error'}render()}
@@ -216,7 +216,23 @@ var kassensturz=lL('kassensturz',{
   schulden:{konsumkredit:0,sonstiges:0}
 });
 // Migrate old fixed-object portfolio to dynamic array
-if(kassensturz.portfolio&&!Array.isArray(kassensturz.portfolio)){var _op=kassensturz.portfolio,_np=[];var _mn={uniGlobal:'UniGlobal',uniHighTech:'UniSector HighTech',uniBlockchain:'UniThemen Blockchain',alphabet:'Alphabet',nvidia:'NVIDIA',sonstiges:'Sonstiges'};var _mc={uniGlobal:'breit',uniHighTech:'tech',uniBlockchain:'crypto',alphabet:'tech',nvidia:'tech',sonstiges:'sonstig'};for(var _k in _op){if(_op[_k]>0)_np.push({name:_mn[_k]||_k,value:_op[_k],cat:_mc[_k]||'sonstig'})}kassensturz.portfolio=_np;sL('kassensturz',kassensturz)}
+function migrateKassen(ks){
+if(!ks)ks={};
+if(!ks.income)ks.income={gehalt:0,sonstiges:0};
+if(!ks.fix)ks.fix={miete:0,strom:0,internet:0,versicherungen:0,handy:0,streaming:0,auto:0,kredit:0};
+if(!ks.variabel)ks.variabel={lebensmittel:0,freizeit:0,sport:0,kleidung:0,restaurant:0,sonstiges:0};
+if(!ks.sparen)ks.sparen={sparplan:0,invest:0};
+if(!ks.vermoegen)ks.vermoegen={girokonto:0,sparkonto:0,notgroschen:0};
+if(!ks.schulden)ks.schulden={konsumkredit:0,sonstiges:0};
+if(!ks.portfolio||!Array.isArray(ks.portfolio)){
+var _op=ks.portfolio||{},_np=[];
+if(typeof _op==='object'&&!Array.isArray(_op)){
+var _mn={uniGlobal:'UniGlobal',uniHighTech:'UniSector HighTech',uniBlockchain:'UniThemen Blockchain',alphabet:'Alphabet',nvidia:'NVIDIA',sonstiges:'Sonstiges'};
+var _mc={uniGlobal:'breit',uniHighTech:'tech',uniBlockchain:'crypto',alphabet:'tech',nvidia:'tech',sonstiges:'sonstig'};
+for(var _k in _op){if(_op[_k]>0)_np.push({name:_mn[_k]||_k,value:_op[_k],cat:_mc[_k]||'sonstig'})}}
+ks.portfolio=_np}
+return ks}
+kassensturz=migrateKassen(kassensturz);sL('kassensturz',kassensturz);
 
 var currentTab='capture',editingDay=null,memoSubTab='partner',familyOpen={ilvy:true,elias:false,kerstin:false,coco:false};
 var kassenTab='uebersicht',kassenOpen={income:true,fix:true,variabel:true,sparen:true,portfolio:true,vermoegen:true,schulden:true};
@@ -328,11 +344,12 @@ el.innerHTML='<div class="card"><div class="card-title">MORGEN-CHECK</div><div c
 
 // === KASSENSTURZ ===
 function rKassen(el){
-var kd=kassensturz;
+try{
+var kd=kassensturz=migrateKassen(kassensturz);
 var tI=oSum(kd.income),tF=oSum(kd.fix),tV=oSum(kd.variabel),tSp=oSum(kd.sparen);
 var tA=tF+tV,frei=tI-tA-tSp;
 var sq=tI>0?(tSp/tI)*100:0;
-var pArr=kd.portfolio||[];
+var pArr=Array.isArray(kd.portfolio)?kd.portfolio:[];
 var tP=0;pArr.forEach(function(p){tP+=p.value||0});
 var tVm=oSum(kd.vermoegen),tD=oSum(kd.schulden);
 var nw=tP+tVm-tD;
@@ -346,6 +363,7 @@ el.innerHTML='<div class="card"><div class="tab-switch"><button class="'+(kassen
 +(kassenTab==='eingaben'?rKEingaben(kd,tI,tF,tV,tSp,tVm,tD):'')
 +(kassenTab==='portfolio'?rKPortfolio(kd,tP,tVm,tD,nw,tech):'')
 +'</div>';
+}catch(e){el.innerHTML='<div class="card"><div class="card-title">KASSENSTURZ</div><div class="k-warn k-warn-red">Fehler beim Laden: '+e.message+'. Versuche "Mehr \u2192 Hochladen" um die Daten zu reparieren.</div><div class="btn-row"><button class="btn-primary" onclick="kassensturz=migrateKassen({});schS();render()">Kassensturz zur\u00fccksetzen</button></div></div>';}
 }
 
 function rKOverview(kd,tI,tF,tV,tSp,tA,frei,sq,tP,tVm,tD,nw,ngM,tech,allZero){
@@ -415,7 +433,7 @@ return h;
 }
 
 function rKPortfolio(kd,tP,tVm,tD,nw,tech){
-var pArr=kd.portfolio||[];
+var pArr=Array.isArray(kd.portfolio)?kd.portfolio:[];
 var catNames={tech:'Tech',breit:'Breit/Index',crypto:'Crypto',anleihen:'Anleihen',sonstig:'Sonstig'};
 var h='<div class="card-title">PORTFOLIO</div><div class="section-desc"><strong>Deine Positionen.</strong> F\u00fcge Aktien, Fonds, ETFs und Crypto hinzu. Kategorie bestimmt die Risikoanalyse.</div>';
 // Add form
@@ -463,7 +481,7 @@ h+='<div class="kbar"><div class="kbar-head"><span class="kbar-name">'+it.n+'</s
 return h;
 }
 
-function addPortPos(){var n=document.getElementById('pName'),v=document.getElementById('pVal'),c=document.getElementById('pCat');if(!n.value.trim())return;kassensturz.portfolio.push({name:n.value.trim(),value:Number(v.value)||0,cat:c.value});schS();render()}
+function addPortPos(){var n=document.getElementById('pName'),v=document.getElementById('pVal'),c=document.getElementById('pCat');if(!n.value.trim())return;if(!Array.isArray(kassensturz.portfolio))kassensturz.portfolio=[];kassensturz.portfolio.push({name:n.value.trim(),value:Number(v.value)||0,cat:c.value});schS();render()}
 function delPortPos(i){kassensturz.portfolio.splice(i,1);schS();render()}
 function editPortPos(i){var p=kassensturz.portfolio[i];var nn=prompt('Name:',p.name);if(nn===null)return;var nv=prompt('Wert (\u20ac):',p.value);if(nv===null)return;p.name=nn.trim()||p.name;p.value=Number(nv)||0;var nc=prompt('Kategorie (tech/breit/crypto/anleihen/sonstig):',p.cat);if(nc!==null&&['tech','breit','crypto','anleihen','sonstig'].indexOf(nc)>=0)p.cat=nc;schS();render()}
 
